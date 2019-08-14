@@ -1,6 +1,20 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Card from "./engine/card";
+import Target from "./engine/target";
+import target from "./engine/target";
+
+const myAction = (target: Target) => {
+  target.health = target.health - 5;
+};
+
+const aCard = (): Card => {
+  return new Card(4, myAction);
+};
+
+const myCard = aCard();
+const myTarget = new Target(100);
 
 const App: React.FC = () => {
   return (
@@ -8,7 +22,7 @@ const App: React.FC = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to cause an error.
+          Edit <code>src/App.tsx</code> and save to cause an error. {myCard.cost} {myTarget.health}
         </p>
         <a
           className="App-link"
@@ -18,6 +32,12 @@ const App: React.FC = () => {
         >
           Learn React
         </a>
+        <ul>
+          <button onClick={() => {myCard.play(myTarget); console.log(myTarget.health);}}>Play</button>
+          <button onClick={() => {myCard.play(myTarget); console.log(myTarget.health);}}>Play</button>
+          <button onClick={() => {myCard.play(myTarget); console.log(myTarget.health);}}>Play</button>
+          <button onClick={() => {myCard.play(myTarget); console.log(myTarget.health);}}>Play</button>
+        </ul>
       </header>
     </div>
   );
