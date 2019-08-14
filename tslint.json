@@ -1,0 +1,14 @@
+{
+  "extends": ["tslint:recommended", "tslint-react"],
+  "linterOptions": {"exclude": ["config/**/*.js", "node_modules/**/*.ts", "coverage/lcov-report/*.js"]},
+  "rules": {
+    "max-line-length": [
+      true,
+      140
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ]
+  }
+}
