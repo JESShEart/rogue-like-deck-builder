@@ -1,15 +1,21 @@
-import Target from './target';
+import Character from './character';
 
 export default class Card {
+  public cardName: string;
     public cost: number;
-    public action: (target: Target) => void;
+  public effect1: (target: Character) => void;
+  public hand: boolean;
 
-    constructor(cost: number, action: (target: Target) => void) {
-        this.cost = cost;
-        this.action = action;
+  constructor(cardName: string, cost: number, effect1: (target: Character) => void) {
+    this.cardName = cardName;
+    this.cost = cost;
+    this.effect1 = effect1;
+    this.hand = false;
     }
 
-    public play(target: Target): void {
-        this.action(target);
-    }
+  public play(target: Character): void {
+    this.hand = false;
+    this.effect1(target);
+  }
+
 }
