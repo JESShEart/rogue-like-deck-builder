@@ -17,7 +17,8 @@ export default class CardComponent extends React.Component<IProps> {
       <button
         onClick={this.cardClicked}
       >
-        {this.props.card.cost}
+        <div>{this.props.card.cost}</div>
+        <div>{this.props.card.cardName}</div>
       </button>
     );
   }

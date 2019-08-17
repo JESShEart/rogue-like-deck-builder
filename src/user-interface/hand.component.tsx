@@ -12,11 +12,11 @@ export default class HandComponent extends React.Component<any, IState> {
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       hand: [
-        new Card(1, () => null),
-        new Card(2, () => null),
-        new Card(3, () => null),
-        new Card(4, () => null),
-        new Card(5, () => null),
+        new Card('Card 1', 1, () => null),
+        new Card('Card 2', 2, () => null),
+        new Card('Card 3', 3, () => null),
+        new Card('Card 4', 4, () => null),
+        new Card('Card 5', 5, () => null),
       ],
     };
   }

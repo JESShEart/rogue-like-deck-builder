@@ -2,7 +2,7 @@ import Character from './character';
 
 export default class Card {
   public cardName: string;
-    public cost: number;
+  public cost: number;
   public effect1: (target: Character) => void;
   public hand: boolean;
 
