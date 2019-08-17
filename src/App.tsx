@@ -1,19 +1,19 @@
 import React from 'react';
 import './App.css';
 import Card from './engine/card';
-import Target from './engine/target';
+import Character from './engine/character';
 import logo from './logo.svg';
 
-const myAction = (target: Target) => {
+const myEffect = (target: Character) => {
   target.health = target.health - 5;
 };
 
 const aCard = (): Card => {
-  return new Card(4, myAction);
+  return new Card("Attack",1, myEffect);
 };
 
 const myCard = aCard();
-const myTarget = new Target(100);
+const myTarget = new Character(100);
 
 const App: React.FC = () => {
   return (

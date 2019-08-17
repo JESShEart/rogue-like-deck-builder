@@ -1,11 +1,11 @@
 import Card from './card';
-import Target from './target';
+import Character from './character';
 
 test('card played 5 times on same target', () => {
-    const action = (target: Target) => target.health -= 5;
-    const card = new Card(4, action);
+    const effect = (target: Character) => target.health -= 5;
+    const card = new Card("Attack", 1, effect);
 
-    const myTarget = new Target(100);
+    const myTarget = new Character(100);
     card.play(myTarget);
     card.play(myTarget);
     card.play(myTarget);
