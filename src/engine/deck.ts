@@ -9,7 +9,8 @@ export default class Deck {
     this.nextCard = 0;
 
     const myEffect = (target: Character) => {
-      target.health = target.health - 5;
+      // target.health = target.health - 5;
+      target.health -= 5; // this is shorthand for the commented code above
     };
 
     this.deck = [
