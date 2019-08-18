@@ -15,7 +15,10 @@ export default class BattleComponent extends React.Component<any, IState> {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.state = {
-      enemyList: [new Character(25), new Character(25)],
+      enemyList: [
+        new Character(25),
+        new Character(25),
+      ],
       hand: [
         new Card('Deal 5 damage', 1, new DamageEffect(5)),
         new Card('Deal 5 damage', 1, new DamageEffect(5)),
