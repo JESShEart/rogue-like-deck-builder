@@ -1,0 +1,25 @@
+div.health-text {
+  font-size: 1.5vmin;
+}
+
+progress.health-bar {
+  height: 1vh;
+  width: 10vw;
+  border: 0px none;
+  background-color: #cccccc;
+  color: red;
+  transition: all 0.5s ease-out;
+}
+
+progress.health-bar::-webkit-progress-bar {
+  background-color: #cccccc;
+}
+
+progress.health-bar::-webkit-progress-value {
+  background-color: red;
+  -webkit-transition: 0.5s ease-out;
+}
+
+progress.health-bar::-moz-progress-bar {
+  background-color: red;
+}
