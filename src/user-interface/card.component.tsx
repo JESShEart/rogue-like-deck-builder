@@ -1,9 +1,12 @@
 import React from 'react';
+import {DragDropContainer} from 'react-drag-drop-container';
 import Card from '../engine/card';
+import Character from '../engine/character';
+import './card.component.css';
 
 interface IProps {
   card: Card;
-  onClick: (card: Card) => any;
+  onClick: (card: Card, target: Character) => any;
 }
 
 export default class CardComponent extends React.Component<IProps> {
@@ -14,16 +17,20 @@ export default class CardComponent extends React.Component<IProps> {
 
   public render() {
     return (
-      <button
-        onClick={this.cardClicked}
+      <DragDropContainer
+        targetKey='character'
+        dragData={this.props.card}
+        onDrop={this.cardClicked}
       >
-        <div>{this.props.card.cost}</div>
-        <div>{this.props.card.cardName}</div>
-      </button>
+        <div className='card'>
+          <div>{this.props.card.cost}</div>
+          <div>{this.props.card.cardName}</div>
+        </div>
+      </DragDropContainer>
     );
   }
 
-  private cardClicked() {
-    this.props.onClick(this.props.card);
+  private cardClicked({dropData}) {
+    this.props.onClick(this.props.card, dropData);
   }
 }

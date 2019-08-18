@@ -2,12 +2,11 @@ import React from 'react';
 import Card from '../engine/card';
 import Character from '../engine/character';
 import DamageEffect from '../engine/effect/damage-effect';
-import logo from '../logo.svg';
+import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
-import HealthBarComponent from './health-bar.component';
 
 interface IState {
-  enemy: Character;
+  enemyList: Character[];
   hand: Card[];
 }
 
@@ -16,13 +15,14 @@ export default class BattleComponent extends React.Component<any, IState> {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.state = {
-      enemy: new Character(25),
+      enemyList: [new Character(25), new Character(25)],
       hand: [
-        new Card('Card 1', 1, new DamageEffect(5)),
-        new Card('Card 2', 2, new DamageEffect(5)),
-        new Card('Card 3', 3, new DamageEffect(5)),
-        new Card('Card 4', 4, new DamageEffect(5)),
-        new Card('Card 5', 5, new DamageEffect(5)),
+        new Card('Deal 5 damage', 1, new DamageEffect(5)),
+        new Card('Deal 5 damage', 1, new DamageEffect(5)),
+        new Card('Deal 10 damage', 2, new DamageEffect(10)),
+        new Card('Deal 10 damage', 2, new DamageEffect(10)),
+        new Card('Deal 15 damage', 3, new DamageEffect(15)),
+        new Card('Deal 5 damage', 1, new DamageEffect(5)),
       ],
     };
   }
@@ -30,12 +30,12 @@ export default class BattleComponent extends React.Component<any, IState> {
   public render() {
     return (
       <div className='hand'>
-        <HealthBarComponent
-          character={this.state.enemy}
+        <CharacterComponent
+          character={this.state.enemyList[0]}
         />
-        <div>
-          <img src={logo} className='App-logo' alt='logo'/>
-        </div>
+        <CharacterComponent
+          character={this.state.enemyList[1]}
+        />
         <HandComponent
           hand={this.state.hand}
           playCard={this.handleClick}
@@ -44,10 +44,10 @@ export default class BattleComponent extends React.Component<any, IState> {
     );
   }
 
-  private handleClick(card: Card) {
-    const enemy = this.state.enemy;
+  private handleClick(card: Card, target: Character) {
+    card.play(target);
+    const enemyList = this.state.enemyList;
     const hand = this.state.hand.filter((c) => c !== card);
-    card.play(enemy);
-    this.setState({enemy, hand});
+    this.setState({enemyList, hand});
   }
 }

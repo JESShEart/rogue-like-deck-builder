@@ -1,10 +1,11 @@
 import React from 'react';
 import Card from '../engine/card';
+import Character from '../engine/character';
 import CardComponent from './card.component';
 
 interface IProps {
   hand: Card[];
-  playCard: (card: Card) => void;
+  playCard: (card: Card, target: Character) => void;
 }
 
 export default class HandComponent extends React.Component<IProps> {
@@ -31,7 +32,7 @@ export default class HandComponent extends React.Component<IProps> {
     );
   }
 
-  private playCard(card: Card) {
-    this.props.playCard(card);
+  private playCard(card: Card, target: Character) {
+    this.props.playCard(card, target);
   }
 }

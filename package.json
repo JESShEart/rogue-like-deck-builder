@@ -6,8 +6,10 @@
     "@types/node": "12.7.1",
     "@types/react": "16.9.1",
     "@types/react-dom": "16.8.5",
+    "eslint": "^6.1.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-drag-drop-container": "^6.1.1",
     "react-scripts": "3.1.1"
   },
   "scripts": {
