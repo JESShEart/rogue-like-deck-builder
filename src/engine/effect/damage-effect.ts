@@ -1,5 +1,5 @@
 import Character from '../character';
-import IEffect from './effect';
+import IEffect from './effect.interface';
 
 export default class DamageEffect implements IEffect {
   private damage: number;

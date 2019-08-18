@@ -1,5 +1,5 @@
 import Character from './character';
-import IEffect from './effect/effect';
+import IEffect from './effect/effect.interface';
 
 export default class Card {
   public cardName: string;
