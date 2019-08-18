@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../engine/card';
+import DamageEffect from '../engine/effect/damage-effect';
 import CardComponent from './card.component';
 
 interface IState {
@@ -12,11 +13,11 @@ export default class HandComponent extends React.Component<any, IState> {
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       hand: [
-        new Card('Card 1', 1, () => null),
-        new Card('Card 2', 2, () => null),
-        new Card('Card 3', 3, () => null),
-        new Card('Card 4', 4, () => null),
-        new Card('Card 5', 5, () => null),
+        new Card('Card 1', 1, new DamageEffect(5)),
+        new Card('Card 2', 2, new DamageEffect(5)),
+        new Card('Card 3', 3, new DamageEffect(5)),
+        new Card('Card 4', 4, new DamageEffect(5)),
+        new Card('Card 5', 5, new DamageEffect(5)),
       ],
     };
   }

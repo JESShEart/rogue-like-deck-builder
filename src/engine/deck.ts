@@ -1,5 +1,5 @@
 import Card from './card';
-import Character from './character';
+import DamageEffect from './effect/damage-effect';
 
 export default class Deck {
   public deck: Card[];
@@ -8,25 +8,20 @@ export default class Deck {
   constructor() {
     this.nextCard = 0;
 
-    const myEffect = (target: Character) => {
-      // target.health = target.health - 5;
-      target.health -= 5; // this is shorthand for the commented code above
-    };
-
     this.deck = [
-      new Card('Attack0', 1, myEffect),
-      new Card('Attack1', 1, myEffect),
-      new Card('Attack2', 1, myEffect),
-      new Card('Attack3', 1, myEffect),
-      new Card('Attack4', 1, myEffect),
-      new Card('Attack5', 1, myEffect),
-      new Card('Attack6', 1, myEffect),
-      new Card('Attack7', 1, myEffect),
-      new Card('Attack8', 1, myEffect),
-      new Card('Attack9', 1, myEffect),
-      new Card('Attack10', 1, myEffect),
-      new Card('Attack11', 1, myEffect),
-      new Card('Attack12', 1, myEffect),
+      new Card('Attack0', 1, new DamageEffect(5)),
+      new Card('Attack1', 1, new DamageEffect(5)),
+      new Card('Attack2', 1, new DamageEffect(5)),
+      new Card('Attack3', 1, new DamageEffect(5)),
+      new Card('Attack4', 1, new DamageEffect(5)),
+      new Card('Attack5', 1, new DamageEffect(5)),
+      new Card('Attack6', 1, new DamageEffect(5)),
+      new Card('Attack7', 1, new DamageEffect(5)),
+      new Card('Attack8', 1, new DamageEffect(5)),
+      new Card('Attack9', 1, new DamageEffect(5)),
+      new Card('Attack10', 1, new DamageEffect(5)),
+      new Card('Attack11', 1, new DamageEffect(5)),
+      new Card('Attack12', 1, new DamageEffect(5)),
     ];
   }
 
