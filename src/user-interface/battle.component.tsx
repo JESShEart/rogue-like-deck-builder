@@ -45,8 +45,9 @@ export default class BattleComponent extends React.Component<any, IState> {
   }
 
   private handleClick(card: Card) {
+    const enemy = this.state.enemy;
     const hand = this.state.hand.filter((c) => c !== card);
-    card.play(this.state.enemy);
-    this.setState({...this.state, hand});
+    card.play(enemy);
+    this.setState({enemy, hand});
   }
 }
