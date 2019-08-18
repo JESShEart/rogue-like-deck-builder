@@ -1,7 +1,9 @@
 export default class Character {
+  public readonly maxHealth: number;
     public health: number;
 
-    constructor(health: number) {
-        this.health = health;
+  constructor(maxHealth: number) {
+    this.maxHealth = maxHealth;
+    this.health = maxHealth;
     }
 }

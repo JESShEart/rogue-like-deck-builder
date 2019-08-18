@@ -1,46 +1,37 @@
 import React from 'react';
 import Card from '../engine/card';
-import DamageEffect from '../engine/effect/damage-effect';
 import CardComponent from './card.component';
 
-interface IState {
+interface IProps {
   hand: Card[];
+  playCard: (card: Card) => void;
 }
 
-export default class HandComponent extends React.Component<any, IState> {
+export default class HandComponent extends React.Component<IProps> {
   constructor(props: any) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.state = {
-      hand: [
-        new Card('Card 1', 1, new DamageEffect(5)),
-        new Card('Card 2', 2, new DamageEffect(5)),
-        new Card('Card 3', 3, new DamageEffect(5)),
-        new Card('Card 4', 4, new DamageEffect(5)),
-        new Card('Card 5', 5, new DamageEffect(5)),
-      ],
-    };
+    this.playCard = this.playCard.bind(this);
   }
 
   public render() {
     return (
       <div className='hand'>
-        {this.state.hand.map((card) => this.renderCard(card))}
+        {this.props.hand.map((card, key) => this.renderCard(card, key))}
       </div>
     );
   }
 
-  private renderCard(card: Card) {
+  private renderCard(card: Card, key: number) {
     return (
       <CardComponent
+        key={key}
         card={card}
-        onClick={this.handleClick}
+        onClick={this.playCard}
       />
     );
   }
 
-  private handleClick(card: Card) {
-    const hand = this.state.hand.filter((c) => c !== card);
-    this.setState({hand});
+  private playCard(card: Card) {
+    this.props.playCard(card);
   }
 }
