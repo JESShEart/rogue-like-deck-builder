@@ -32,7 +32,7 @@ export default class BattleComponent extends React.Component<any, IState> {
 
   public render() {
     return (
-      <div className='hand'>
+      <div>
         <CharacterComponent
           character={this.state.enemyList[0]}
         />

@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../engine/card';
 import Character from '../engine/character';
 import CardComponent from './card.component';
+import './hand.component.css';
 
 interface IProps {
   hand: Card[];
@@ -24,11 +25,13 @@ export default class HandComponent extends React.Component<IProps> {
 
   private renderCard(card: Card, key: number) {
     return (
-      <CardComponent
-        key={key}
-        card={card}
-        onClick={this.playCard}
-      />
+      <span className='card-container'>
+        <CardComponent
+          key={key}
+          card={card}
+          onClick={this.playCard}
+        />
+      </span>
     );
   }
 
