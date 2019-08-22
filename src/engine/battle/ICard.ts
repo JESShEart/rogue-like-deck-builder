@@ -1,21 +1,22 @@
-import {Effect, EffectType} from './IEffect';
-import UnTargetedEffect from './UnTargetedEffect';
+import {IEffect, IUnTargetedEffect} from './IEffect';
 
-// export interface ICard {
-//   name: string;
-//   effectList: Effect[];
-// }
+export enum CardType {
+  TARGETED,
+  UN_TARGETED,
+}
 
 export interface ITargetedCard {
-  name: string;
-  TARGETED: EffectType.TARGETED;
-  effectList: Effect[];
+  readonly name: string;
+  readonly cost: number;
+  readonly cardType: CardType.TARGETED;
+  readonly effectList: IEffect[];
 }
 
 export interface IUnTargetedCard {
-  name: string;
-  UN_TARGETED: EffectType.UN_TARGETED;
-  effectList: UnTargetedEffect[];
+  readonly name: string;
+  readonly cost: number;
+  readonly cardType: CardType.UN_TARGETED;
+  readonly effectList: IUnTargetedEffect[];
 }
 
-export type Card = ITargetedCard | IUnTargetedCard;
+export type ICard = ITargetedCard | IUnTargetedCard;

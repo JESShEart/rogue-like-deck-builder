@@ -1,6 +1,7 @@
 import Character from '../character';
-import IBattleState from './BattleState';
-import {Card, ITargetedCard, IUnTargetedCard} from './ICard';
+import EffectService from './EffectService';
+import IBattleState from './IBattleState';
+import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
 
 export class BattleService {
   public static draw(battleState: IBattleState, quantity: number = 1): IBattleState {
@@ -25,9 +26,8 @@ export class BattleService {
   }
 
   public static playUnTargetedCard(battleState: IBattleState, card: IUnTargetedCard): IBattleState {
-    const effectToQueueList = card.effectList.map((effect) => ({effect}));
-    const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
-    const hand = battleState.hand.filter((c: Card) => c !== card);
+    const effectQueue = [...battleState.effectQueue, ...card.effectList];
+    const hand = battleState.hand.filter((c: ICard) => c !== card);
     const discardPile = [...battleState.discardPile, card];
     return {
       ...battleState,
@@ -39,9 +39,9 @@ export class BattleService {
 
   public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: Character): IBattleState {
     const effectToQueueList = card.effectList.map((effect) =>
-      ('TARGETED' in effect) ? {effect, target} : {effect});
+      ('target' in effect) ? {...effect, target} : effect);
     const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
-    const hand = battleState.hand.filter((c: Card) => c !== card);
+    const hand = battleState.hand.filter((c: ICard) => c !== card);
     const discardPile = [...battleState.discardPile, card];
     return {
       ...battleState,
@@ -54,21 +54,22 @@ export class BattleService {
   public static resolveNextEffect(battleState: IBattleState): IBattleState {
     if (battleState.effectQueue.length === 0) { return battleState; }
 
-    const currentEffect = battleState.effectQueue[0];
+    const effect = battleState.effectQueue[0];
     const effectQueue = battleState.effectQueue.length > 1 ? battleState.effectQueue.slice(1) : [];
-    const effectLog = [...battleState.effectLog, currentEffect];
 
-    const newBattleState = {
+    const beforeActivation = {
       ...battleState,
-      effectLog,
       effectQueue,
     };
 
-    if ('target' in currentEffect) {
-      return currentEffect.effect.activate(newBattleState, currentEffect.target);
-    } else {
-      return currentEffect.effect.activate(newBattleState);
-    }
+    const afterActivation =
+      EffectService.activate(beforeActivation, effect);
+
+    const effectLog = [...battleState.effectLog, effect];
+    return {
+      ...afterActivation,
+      effectLog,
+    };
   }
 
   public static hasEffectToResolve(battleState: IBattleState): boolean {

@@ -1,30 +1,29 @@
 import Character from '../character';
-import IBattleState from './BattleState';
 
 export enum EffectType {
   UN_TARGETED,
   TARGETED,
+  DAMAGE_TARGET,
+  HEAL_TARGET,
+  DRAW_EFFECT,
 }
 
 export interface IUnTargetedEffect {
-  UN_TARGETED: EffectType.UN_TARGETED;
-  activate: (battleState: IBattleState) => IBattleState;
+  readonly effectType: EffectType.UN_TARGETED | EffectType.DRAW_EFFECT;
 }
 
 export interface ITargetedEffect {
-  TARGETED: EffectType.TARGETED;
-  activate: (battleState: IBattleState, target: Character) => IBattleState;
+  readonly effectType: EffectType.TARGETED;
+  readonly target?: Character;
 }
 
-export type Effect = ITargetedEffect | IUnTargetedEffect;
-
-export interface IQueuedUnTargetedEffect {
-  effect: IUnTargetedEffect;
+export interface IDamageTargetEffect {
+  readonly effectType: EffectType.DAMAGE_TARGET | EffectType.HEAL_TARGET;
+  readonly damage: number;
+  readonly target?: Character;
 }
 
-export interface IQueuedTargetedEffect {
-  effect: ITargetedEffect;
-  target: Character;
-}
-
-export type QueuedEffect = IQueuedUnTargetedEffect | IQueuedTargetedEffect;
+export type IEffect =
+  IUnTargetedEffect |
+  ITargetedEffect |
+  IDamageTargetEffect;

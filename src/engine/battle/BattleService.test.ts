@@ -1,11 +1,8 @@
-import card from '../card';
 import Character from '../character';
 import {BattleService} from './BattleService';
-import IBattleState from './BattleState';
-import TargetedCard from './TargetedCard';
-import TargetedEffect from './TargetedEffect';
-import UnTargetedCard from './UnTargetedCard';
-import UnTargetedEffect from './UnTargetedEffect';
+import IBattleState from './IBattleState';
+import {CardType, IUnTargetedCard} from './ICard';
+import {EffectType, IDamageTargetEffect, IUnTargetedEffect} from './IEffect';
 
 const baseState: IBattleState = {
   deck: [],
@@ -18,9 +15,10 @@ const baseState: IBattleState = {
 };
 
 test('draw 1 card', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
   const state: IBattleState = {
     ...baseState,
-    deck: [new UnTargetedCard('card', [])],
+    deck: [card],
   };
   const newState = BattleService.draw(state);
   expect(newState.hand.length).toBe(1);
@@ -28,20 +26,21 @@ test('draw 1 card', () => {
 });
 
 test('play 1 card', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
   const state: IBattleState = {
     ...baseState,
-    hand: [new UnTargetedCard('card', [])],
+    hand: [card],
   };
-  const newState = BattleService.playUnTargetedCard(state, state.hand[0] as UnTargetedCard);
+  const newState = BattleService.playUnTargetedCard(state, state.hand[0] as IUnTargetedCard);
   expect(newState.hand.length).toBe(0);
   expect(newState.discardPile.length).toBe(1);
 });
 
 test('activate 1 effect', () => {
-  const effect = new UnTargetedEffect((battleState: IBattleState) => battleState);
+  const effect: IUnTargetedEffect = {effectType: EffectType.UN_TARGETED};
   const state: IBattleState = {
     ...baseState,
-    effectQueue: [{effect}],
+    effectQueue: [effect],
   };
   const newState = BattleService.resolveNextEffect(state);
   expect(newState.effectQueue.length).toBe(0);
@@ -49,23 +48,15 @@ test('activate 1 effect', () => {
 });
 
 test('activate damage effect', () => {
-  const deal5DamageToTarget = (battleState: IBattleState, target: Character): IBattleState => {
-    const health = target.health - 5;
-    const enemyList = battleState.enemyList
-      .map((enemy: Character) => target === enemy ? {...target, health} : enemy);
-    return {
-      ...battleState,
-      enemyList,
-    };
+  const damageEffect: IDamageTargetEffect = {
+    damage: 5,
+    effectType: EffectType.DAMAGE_TARGET,
+    target: baseState.enemyList[0],
   };
-  const damageEffect = new TargetedEffect(deal5DamageToTarget);
 
   const state: IBattleState = {
     ...baseState,
-    effectQueue: [{
-      effect: damageEffect,
-      target: baseState.enemyList[0],
-    }],
+    effectQueue: [damageEffect],
   };
 
   const newState = BattleService.resolveNextEffect(state);
@@ -73,12 +64,11 @@ test('activate damage effect', () => {
 });
 
 test('activate drawing effect', () => {
-  const drawCard = (battleState: IBattleState) => BattleService.draw(battleState);
-  const effect = new UnTargetedEffect(drawCard);
+  const effect: IUnTargetedEffect = {effectType: EffectType.DRAW_EFFECT};
   const state: IBattleState = {
     ...baseState,
-    deck: [new TargetedCard('card', [])],
-    effectQueue: [{effect}],
+    deck: [{cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []}],
+    effectQueue: [effect],
   };
   const newState = BattleService.resolveNextEffect(state);
   expect(newState.deck.length).toBe(0);
@@ -86,10 +76,10 @@ test('activate drawing effect', () => {
 });
 
 test('has 3 effects to resolve', () => {
-  const effect = new UnTargetedEffect((battleState) => battleState);
+  const effect: IUnTargetedEffect = {effectType: EffectType.UN_TARGETED};
   let state: IBattleState = {
     ...baseState,
-    effectQueue: [{effect}, {effect}, {effect}],
+    effectQueue: [effect, effect, effect],
   };
   let count = 0;
   while (BattleService.hasEffectToResolve(state)) {
