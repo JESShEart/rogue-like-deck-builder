@@ -3,6 +3,8 @@ import IBattleState from './IBattleState';
 import {EffectType, IDamageTargetEffect, IEffect} from './IEffect';
 
 export default class EffectService {
+
+  // this is effectively a "factory" that executes a function based on the effect's effectType enum
   public static activate(battleState: IBattleState, effect: IEffect): IBattleState {
     switch (effect.effectType) {
 
