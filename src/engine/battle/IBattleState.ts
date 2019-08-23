@@ -1,10 +1,10 @@
-import Character from '../character';
 import {ICard} from './ICard';
+import {IEnemyCharacter, IHeroCharacter} from './ICharacter';
 import {IEffect} from './IEffect';
 
 export default interface IBattleState {
-  hero: Character;
-  enemyList: Character[];
+  hero: IHeroCharacter;
+  enemyList: IEnemyCharacter[];
   deck: ICard[];
   hand: ICard[];
   discardPile: ICard[];

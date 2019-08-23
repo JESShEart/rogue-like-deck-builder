@@ -1,7 +1,7 @@
-import Character from '../character';
 import EffectService from './EffectService';
 import IBattleState from './IBattleState';
 import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
+import {ICharacter} from './ICharacter';
 
 export class BattleService {
   public static draw(battleState: IBattleState, quantity: number = 1): IBattleState {
@@ -37,7 +37,7 @@ export class BattleService {
     };
   }
 
-  public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: Character): IBattleState {
+  public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: ICharacter): IBattleState {
     const effectToQueueList = card.effectList.map((effect) =>
       ('target' in effect) ? {...effect, target} : effect);
     const effectQueue = [...battleState.effectQueue, ...effectToQueueList];

@@ -1,6 +1,7 @@
 import {BattleService} from './BattleService';
+import CharacterService from './CharacterService';
 import IBattleState from './IBattleState';
-import {EffectType, IDamageTargetEffect, IEffect} from './IEffect';
+import {EffectType, IEffect, ITargetedAmountEffect} from './IEffect';
 
 export default class EffectService {
 
@@ -25,21 +26,31 @@ export default class EffectService {
     }
   }
 
-  public static damage(battleState: IBattleState, effect: IDamageTargetEffect): IBattleState {
-    const enemyList = battleState.enemyList.map((c) =>
-      c === effect.target ? {...c, health: c.health - effect.damage} : c);
-    return {
-      ...battleState,
-      enemyList,
+  public static damage(battleState: IBattleState, effect: ITargetedAmountEffect): IBattleState {
+    if (!effect.target) { return battleState; }
+    if (effect.amount <= 0) { return battleState; }
+
+    const damage = effect.amount < effect.target.health ? effect.amount : effect.target.health;
+    const health = effect.target.health - damage;
+    const newCharacterState = {
+      ...effect.target,
+      health,
     };
+
+    return CharacterService.update(battleState, effect.target, newCharacterState);
   }
 
-  public static heal(battleState: IBattleState, effect: IDamageTargetEffect): IBattleState {
-    const enemyList = battleState.enemyList.map((c) =>
-      c === effect.target ? {...c, health: c.health - effect.damage} : c);
-    return {
-      ...battleState,
-      enemyList,
+  public static heal(battleState: IBattleState, effect: ITargetedAmountEffect): IBattleState {
+    if (!effect.target) { return battleState; }
+    if (effect.amount <= 0) { return battleState; }
+
+    const totalHealed = effect.target.health + effect.amount;
+    const health =  totalHealed < effect.target.maxHealth ? totalHealed : effect.target.maxHealth;
+    const newCharacterState = {
+      ...effect.target,
+      health,
     };
+
+    return CharacterService.update(battleState, effect.target, newCharacterState);
   }
 }
