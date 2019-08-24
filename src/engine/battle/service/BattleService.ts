@@ -1,9 +1,10 @@
+import IBattleState from '../IBattleState';
+import {ICard, ITargetedCard, IUnTargetedCard} from '../ICard';
+import {IdentifiedCharacter} from '../ICharacter';
 import EffectService from './EffectService';
-import IBattleState from './IBattleState';
-import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
-import {ICharacter} from './ICharacter';
 
 export class BattleService {
+
   public static draw(battleState: IBattleState, quantity: number = 1): IBattleState {
     // TODO check and handle for edge cases, like not enough cards to draw, hand too large, whatever...
     const drawn = battleState.deck.slice(0, quantity);
@@ -37,7 +38,7 @@ export class BattleService {
     };
   }
 
-  public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: ICharacter): IBattleState {
+  public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: IdentifiedCharacter): IBattleState {
     const effectToQueueList = card.effectList.map((effect) =>
       ('target' in effect) ? {...effect, target} : effect);
     const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
@@ -52,7 +53,7 @@ export class BattleService {
   }
 
   public static resolveNextEffect(battleState: IBattleState): IBattleState {
-    if (battleState.effectQueue.length === 0) { return battleState; }
+    if (!BattleService.hasEffectToResolve(battleState)) { return battleState; }
 
     const effect = battleState.effectQueue[0];
     const effectQueue = battleState.effectQueue.length > 1 ? battleState.effectQueue.slice(1) : [];

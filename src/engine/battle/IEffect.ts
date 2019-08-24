@@ -1,5 +1,3 @@
-import {ICharacter} from './ICharacter';
-
 export enum EffectType {
   UN_TARGETED,
   TARGETED,
@@ -14,13 +12,13 @@ export interface IUnTargetedEffect {
 
 export interface ITargetedEffect {
   readonly effectType: EffectType.TARGETED;
-  readonly target?: ICharacter;
+  readonly targetId?: number;
 }
 
 export interface ITargetedAmountEffect {
   readonly effectType: EffectType.DAMAGE_TARGET | EffectType.HEAL_TARGET;
   readonly amount: number;
-  readonly target?: ICharacter;
+  readonly targetId?: number;
 }
 
 export type IEffect =

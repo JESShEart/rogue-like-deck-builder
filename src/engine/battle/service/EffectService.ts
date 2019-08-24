@@ -1,7 +1,7 @@
+import IBattleState from '../IBattleState';
+import {EffectType, IEffect, ITargetedAmountEffect} from '../IEffect';
 import {BattleService} from './BattleService';
 import CharacterService from './CharacterService';
-import IBattleState from './IBattleState';
-import {EffectType, IEffect, ITargetedAmountEffect} from './IEffect';
 
 export default class EffectService {
 
@@ -26,31 +26,40 @@ export default class EffectService {
     }
   }
 
-  public static damage(battleState: IBattleState, effect: ITargetedAmountEffect): IBattleState {
-    if (!effect.target) { return battleState; }
+  public static damage(
+    battleState: IBattleState,
+    effect: ITargetedAmountEffect,
+  ): IBattleState {
+    if (!effect.targetId) { return battleState; }
     if (effect.amount <= 0) { return battleState; }
 
-    const damage = effect.amount < effect.target.health ? effect.amount : effect.target.health;
-    const health = effect.target.health - damage;
+    const target = CharacterService.getCharacterById(battleState, effect.targetId);
+    if (!target) { return battleState; }
+
+    const damage = effect.amount < target.health ? effect.amount : target.health;
+    const health = target.health - damage;
     const newCharacterState = {
-      ...effect.target,
+      ...target,
       health,
     };
 
-    return CharacterService.update(battleState, effect.target, newCharacterState);
+    return CharacterService.update(battleState, newCharacterState);
   }
 
   public static heal(battleState: IBattleState, effect: ITargetedAmountEffect): IBattleState {
-    if (!effect.target) { return battleState; }
+    if (!effect.targetId) { return battleState; }
     if (effect.amount <= 0) { return battleState; }
 
-    const totalHealed = effect.target.health + effect.amount;
-    const health =  totalHealed < effect.target.maxHealth ? totalHealed : effect.target.maxHealth;
+    const target = CharacterService.getCharacterById(battleState, effect.targetId);
+    if (!target) { return battleState; }
+
+    const totalHealed = target.health + effect.amount;
+    const health =  totalHealed < target.maxHealth ? totalHealed : target.maxHealth;
     const newCharacterState = {
-      ...effect.target,
+      ...target,
       health,
     };
 
-    return CharacterService.update(battleState, effect.target, newCharacterState);
+    return CharacterService.update(battleState, newCharacterState);
   }
 }

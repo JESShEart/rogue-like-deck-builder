@@ -16,3 +16,12 @@ export interface IEnemyCharacter {
 }
 
 export type ICharacter = IHeroCharacter | IEnemyCharacter;
+
+export interface IIdentified {
+  readonly id: number;
+}
+
+export type IdentifiedEnemy = IIdentified & IEnemyCharacter;
+export type IdentifiedHero = IIdentified & IHeroCharacter;
+
+export type IdentifiedCharacter = IdentifiedEnemy | IdentifiedHero;

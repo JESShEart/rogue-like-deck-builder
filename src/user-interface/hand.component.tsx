@@ -25,9 +25,11 @@ export default class HandComponent extends React.Component<IProps> {
 
   private renderCard(card: Card, key: number) {
     return (
-      <span className='card-container'>
+      <span
+        key={key}
+        className='card-container'
+      >
         <CardComponent
-          key={key}
           card={card}
           onClick={this.playCard}
         />

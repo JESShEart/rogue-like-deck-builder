@@ -1,17 +1,17 @@
+import IBattleState from '../IBattleState';
+import {CardType, IUnTargetedCard} from '../ICard';
+import {CharacterType} from '../ICharacter';
+import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from '../IEffect';
 import {BattleService} from './BattleService';
-import IBattleState from './IBattleState';
-import {CardType, IUnTargetedCard} from './ICard';
-import {CharacterType} from './ICharacter';
-import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from './IEffect';
 
 const baseState: IBattleState = {
   deck: [],
   discardPile: [],
   effectLog: [],
   effectQueue: [],
-  enemyList: [{characterType: CharacterType.ENEMY, health: 100, maxHealth: 100}],
+  enemyList: [{id: 1, characterType: CharacterType.ENEMY, health: 100, maxHealth: 100}],
   hand: [],
-  hero: {characterType: CharacterType.HERO, health: 100, maxHealth: 100},
+  hero: {id: 0, characterType: CharacterType.HERO, health: 100, maxHealth: 100},
 };
 
 test('draw 1 card', () => {
@@ -51,7 +51,7 @@ test('activate damage effect', () => {
   const damageEffect: ITargetedAmountEffect = {
     amount: 5,
     effectType: EffectType.DAMAGE_TARGET,
-    target: baseState.enemyList[0],
+    targetId: baseState.enemyList[0].id,
   };
 
   const state: IBattleState = {
