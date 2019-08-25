@@ -1,9 +1,9 @@
 import React from 'react';
-import Character from '../engine/character';
+import {ICharacter} from '../engine/battle/ICharacter';
 import './health-bar.component.css';
 
 interface IProps {
-  character: Character;
+  character: ICharacter;
 }
 
 export default class HealthBarComponent extends React.Component<IProps> {
