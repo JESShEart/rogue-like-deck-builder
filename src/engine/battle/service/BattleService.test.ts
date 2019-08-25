@@ -6,8 +6,8 @@ import {BattleService} from './BattleService';
 import BattleStateBuilder from './BattleStateBuilder';
 
 const baseState: IBattleState = BattleStateBuilder.initial()
-  .withHero({characterType: CharacterType.HERO, health: 100, maxHealth: 100})
-  .withEnemy({characterType: CharacterType.ENEMY, health: 100, maxHealth: 100})
+  .withHero({characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100})
+  .withEnemy({characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100})
   .build();
 
 const HERO = baseState.hero;

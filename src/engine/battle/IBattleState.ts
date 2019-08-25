@@ -3,6 +3,9 @@ import {IIdentifiedCharacterMap} from './ICharacter';
 import {IEffect} from './IEffect';
 
 export default interface IBattleState {
+  mana: number;
+  maxMana: number;
+
   hero: number;
   enemyList: number[];
   characterMap: IIdentifiedCharacterMap;

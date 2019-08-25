@@ -21,6 +21,8 @@ export default class BattleStateBuilder {
     enemyList: [],
     hand: [],
     hero: 0,
+    mana: 0,
+    maxMana: 0,
     nextId: 1,
   };
 
