@@ -16,9 +16,9 @@
   width: 100%;
   bottom: 0;
   z-index: 10;
-  -webkit-animation: slide 500ms forwards;
+  -webkit-animation: slide 300ms forwards;
   -webkit-animation-delay: 0ms;
-  animation: slide 500ms forwards;
+  animation: slide 300ms forwards;
   animation-delay: 0ms;
 }
 

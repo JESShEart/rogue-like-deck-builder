@@ -4,17 +4,20 @@ import IBattleState from './IBattleState';
 import {CardType, ICard} from './ICard';
 
 export type StateResponder = (battleState: IBattleState) => void;
+export type TimeTravelingCallback = (timeTraveling: boolean) => void;
 
 export default class BattleManager {
   private stateResponder: StateResponder;
+  private timeTravelingCallback: TimeTravelingCallback;
   private battleState: IBattleState;
 
   private historyIndex?: number;
   private history: IBattleState[] = [];
 
-  constructor(battleState: IBattleState, stateResponder: StateResponder) {
+  constructor(battleState: IBattleState, stateResponder: StateResponder, timeTravelingCallback: TimeTravelingCallback) {
     this.battleState = battleState;
     this.stateResponder = stateResponder;
+    this.timeTravelingCallback = timeTravelingCallback;
   }
 
   public getHistory(): IBattleState[] {
@@ -22,9 +25,11 @@ export default class BattleManager {
   }
 
   public resume(): void {
-    if (!this.historyIndex) { return; }
-    this.historyIndex = undefined;
+    if (this.historyIndex === undefined) { return; }
     this.history = this.history.slice(0, this.historyIndex);
+    this.historyIndex = undefined;
+
+    this.timeTravelingCallback(this.isTimeTraveling());
     this.run();
   }
 
@@ -33,6 +38,8 @@ export default class BattleManager {
     if (historyIndex >= this.history.length) { return; }
     this.historyIndex = historyIndex;
     this.battleState = this.history[historyIndex];
+
+    this.timeTravelingCallback(this.isTimeTraveling());
     this.next(this.battleState);
   }
 
@@ -43,13 +50,9 @@ export default class BattleManager {
   }
 
   public goForward(): void {
-    if (!this.historyIndex) { return; }
-    if (this.historyIndex + 1 >= this.history.length) { return; }
-    this.goTo(this.historyIndex + 1 );
-  }
-
-  public isTimeTraveling(): boolean {
-    return this.historyIndex !== undefined;
+    if (this.historyIndex === undefined) { return; }
+    if (this.historyIndex + 1 >= this.history.length) { return this.resume(); }
+    this.goTo(++this.historyIndex);
   }
 
   public run(): void {
@@ -70,7 +73,7 @@ export default class BattleManager {
   public playCard(card: ICard, targetId: number = -1): void {
     const tester = BattleTesterService;
     if (!tester.isPlayerTurn(this.battleState)) { return; }
-
+    if (this.isTimeTraveling()) { this.resume(); }
     while (!tester.canPlayCard(this.battleState)) {
       // basically fast forwarding to let this card get played
       this.run();
@@ -86,8 +89,14 @@ export default class BattleManager {
     this.run();
   }
 
+  private isTimeTraveling(): boolean {
+    return this.historyIndex !== undefined;
+  }
+
   private next(battleState: IBattleState): void {
-    this.history = [...this.history, this.battleState];
+    if (!this.isTimeTraveling()) {
+      this.history = [...this.history, this.battleState];
+    }
     this.battleState = battleState;
     this.stateResponder(battleState);
   }
