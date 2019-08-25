@@ -3,20 +3,20 @@ import {IIdentifiedCharacterMap} from './ICharacter';
 import {IEffect} from './IEffect';
 
 export default interface IBattleState {
-  mana: number;
-  maxMana: number;
+  readonly mana: number;
+  readonly maxMana: number;
 
-  hero: number;
-  enemyList: number[];
-  characterMap: IIdentifiedCharacterMap;
+  readonly hero: number;
+  readonly enemyList: number[];
+  readonly characterMap: IIdentifiedCharacterMap;
 
-  deck: ICard[];
-  hand: ICard[];
-  discardPile: ICard[];
+  readonly deck: ICard[];
+  readonly hand: ICard[];
+  readonly discardPile: ICard[];
 
-  activeEffect?: IEffect;
-  effectQueue: IEffect[];
-  effectLog: IEffect[];
+  readonly activeEffect?: IEffect;
+  readonly effectQueue: IEffect[];
+  readonly effectLog: IEffect[];
 
-  nextId: number;
+  readonly nextId: number;
 }

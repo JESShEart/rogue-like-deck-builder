@@ -1,0 +1,31 @@
+.effect-container {
+  position: absolute;
+  /*background-color: red;*/
+  width: 100px;
+  height: 60%;
+  left: 50%;
+  margin-left: -50px;
+  text-align: center;
+}
+
+.effect-amount {
+  /*background-color: #3D9970;*/
+  /*color: white;*/
+  font-size: 50px;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  z-index: 10;
+  -webkit-animation: slide 500ms forwards;
+  -webkit-animation-delay: 0ms;
+  animation: slide 500ms forwards;
+  animation-delay: 0ms;
+}
+
+@-webkit-keyframes slide {
+  100% { bottom: 100px; }
+}
+
+@keyframes slide {
+  100% { bottom: 100px; }
+}

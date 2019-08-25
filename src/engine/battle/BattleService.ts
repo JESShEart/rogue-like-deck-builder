@@ -32,14 +32,12 @@ export class BattleService {
   }
 
   public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: IdentifiedCharacter): IBattleState {
-    const effectToQueueList = card.effectList.map((effect) =>
-      ('targetId' in effect) ? {...effect, target} : effect);
+    const targetId = target.id;
+    const effectToQueueList = card.effectList.map((effect) => ({...effect, targetId}));
     return this.playCardCommonBehavior(battleState, card, effectToQueueList);
   }
 
   public static activateNextEffect(battleState: IBattleState): IBattleState {
-    if (battleState.activeEffect) {return battleState; }
-    if (!battleState.effectQueue.length) { return battleState; }
     const activeEffect = battleState.effectQueue[0];
     const effectQueue = battleState.effectQueue.length > 1 ? battleState.effectQueue.slice(1) : [];
     const effectActiveState = {
@@ -59,10 +57,6 @@ export class BattleService {
       activeEffect,
       effectLog,
     };
-  }
-
-  public static hasEffectToResolve(battleState: IBattleState): boolean {
-    return battleState.effectQueue.length > 0;
   }
 
   private static playCardCommonBehavior(battleState: IBattleState, card: ICard, effectToQueueList: IEffect[]) {

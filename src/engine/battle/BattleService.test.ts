@@ -3,7 +3,7 @@ import BattleStateBuilder from './BattleStateBuilder';
 import IBattleState from './IBattleState';
 import {CardType, ITargetedCard, IUnTargetedCard} from './ICard';
 import {CharacterType} from './ICharacter';
-import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from './IEffect';
+import {EffectType, ITargetedAmountEffect, ITargetedEffect, IUnTargetedEffect} from './IEffect';
 
 const baseState: IBattleState = BattleStateBuilder.initial()
   .withMana(5, 5)
@@ -38,15 +38,19 @@ test('play 1 un-targeted card', () => {
 });
 
 test('play 1 targeted card', () => {
-  const card: ITargetedCard = {cardType: CardType.TARGETED, name: 'card', cost: 1, effectList: []};
+  const card: ITargetedCard = {cardType: CardType.TARGETED, name: 'card', cost: 1, effectList: [{effectType: EffectType.TARGETED}]};
   const state: IBattleState = {
     ...baseState,
     hand: [card],
   };
-  const {hand, discardPile, mana} = BattleService.playTargetedCard(state, state.hand[0] as ITargetedCard, baseState.characterMap[ENEMY]);
+  const {hand, discardPile, mana, effectQueue} =
+    BattleService.playTargetedCard(state, state.hand[0] as ITargetedCard, baseState.characterMap[ENEMY]);
   expect(mana).toBe(4);
   expect(hand.length).toBe(0);
   expect(discardPile.length).toBe(1);
+  expect(effectQueue.length).toBe(1);
+  const queuedEffect = effectQueue[0] as ITargetedEffect;
+  expect(queuedEffect.targetId).toBe(ENEMY);
 });
 
 test('cannot play card when not enough mana', () => {
@@ -113,12 +117,16 @@ test('has 3 effects to resolve', () => {
     ...baseState,
     effectQueue: [effect, effect, effect],
   };
-  let count = 0;
-  while (BattleService.hasEffectToResolve(state)) {
-    state = BattleService.activateNextEffect(state);
-    state = BattleService.completeActiveEffect(state);
-    count++;
-  }
-  expect(count).toBe(3);
+
+  state = BattleService.activateNextEffect(state);
+  state = BattleService.completeActiveEffect(state);
+  expect(state.effectQueue.length).toBe(2);
+
+  state = BattleService.activateNextEffect(state);
+  state = BattleService.completeActiveEffect(state);
+  expect(state.effectQueue.length).toBe(1);
+
+  state = BattleService.activateNextEffect(state);
+  state = BattleService.completeActiveEffect(state);
   expect(state.effectQueue.length).toBe(0);
 });
