@@ -6,6 +6,7 @@ import {BattleService} from './BattleService';
 import BattleStateBuilder from './BattleStateBuilder';
 
 const baseState: IBattleState = BattleStateBuilder.initial()
+  .withMana(5, 5)
   .withHero({characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100})
   .withEnemy({characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100})
   .build();
@@ -30,9 +31,10 @@ test('play 1 un-targeted card', () => {
     ...baseState,
     hand: [card],
   };
-  const newState = BattleService.playUnTargetedCard(state, state.hand[0] as IUnTargetedCard);
-  expect(newState.hand.length).toBe(0);
-  expect(newState.discardPile.length).toBe(1);
+  const {hand, discardPile, mana} = BattleService.playUnTargetedCard(state, state.hand[0] as IUnTargetedCard);
+  expect(mana).toBe(4);
+  expect(hand.length).toBe(0);
+  expect(discardPile.length).toBe(1);
 });
 
 test('play 1 targeted card', () => {
@@ -41,9 +43,23 @@ test('play 1 targeted card', () => {
     ...baseState,
     hand: [card],
   };
-  const newState = BattleService.playTargetedCard(state, state.hand[0] as ITargetedCard, baseState.characterMap[ENEMY]);
-  expect(newState.hand.length).toBe(0);
-  expect(newState.discardPile.length).toBe(1);
+  const {hand, discardPile, mana} = BattleService.playTargetedCard(state, state.hand[0] as ITargetedCard, baseState.characterMap[ENEMY]);
+  expect(mana).toBe(4);
+  expect(hand.length).toBe(0);
+  expect(discardPile.length).toBe(1);
+});
+
+test('cannot play card when not enough mana', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 2, effectList: []};
+  const state: IBattleState = {
+    ...baseState,
+    hand: [card],
+    mana: 1,
+  };
+  const {hand, discardPile, mana} = BattleService.playUnTargetedCard(state, state.hand[0] as IUnTargetedCard);
+  expect(mana).toBe(1);
+  expect(hand.length).toBe(1);
+  expect(discardPile.length).toBe(0);
 });
 
 test('activate 1 effect', () => {

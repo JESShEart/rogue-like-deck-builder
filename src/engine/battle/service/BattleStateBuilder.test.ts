@@ -1,5 +1,8 @@
-import {CharacterType} from '../ICharacter';
+import {CharacterType, IEnemyCharacter, IHeroCharacter} from '../ICharacter';
 import BattleStateBuilder from './BattleStateBuilder';
+
+const hero: IHeroCharacter = {characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100};
+const enemy: IEnemyCharacter = {characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100};
 
 test('throws error when no hero', () => {
   const builder = BattleStateBuilder.initial();
@@ -8,9 +11,9 @@ test('throws error when no hero', () => {
 
 test('build intitial', () => {
   const battleState = BattleStateBuilder.initial()
-    .withHero({characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100})
-    .withEnemy({characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100})
-    .withEnemy({characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100})
+    .withHero(hero)
+    .withEnemy(enemy)
+    .withEnemy(enemy)
     .build();
 
   expect(battleState.nextId).toBe(4);
@@ -31,11 +34,11 @@ test('build intitial', () => {
 
 test('build from', () => {
   let battleState = BattleStateBuilder.initial()
-    .withHero({characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100})
+    .withHero(hero)
     .build();
 
   battleState = BattleStateBuilder.from(battleState)
-    .withEnemy({characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100})
+    .withEnemy(enemy)
     .build();
 
   expect(battleState.nextId).toBe(3);
@@ -48,4 +51,14 @@ test('build from', () => {
   const ENEMY1 = battleState.enemyList[0];
   expect(ENEMY1).toBe(2);
   expect(battleState.characterMap[ENEMY1]).toBeTruthy();
+});
+
+test('build initial with mana', () => {
+  const battleState = BattleStateBuilder.initial()
+    .withHero(hero)
+    .withMana(1, 2)
+    .build();
+  const {mana, maxMana} = battleState;
+  expect(mana).toBe(1);
+  expect(maxMana).toBe(2);
 });

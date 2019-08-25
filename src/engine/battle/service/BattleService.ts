@@ -1,6 +1,7 @@
 import IBattleState from '../IBattleState';
 import {ICard, ITargetedCard, IUnTargetedCard} from '../ICard';
 import {IdentifiedCharacter} from '../ICharacter';
+import {IEffect} from '../IEffect';
 import EffectService from './EffectService';
 
 export class BattleService {
@@ -27,29 +28,13 @@ export class BattleService {
   }
 
   public static playUnTargetedCard(battleState: IBattleState, card: IUnTargetedCard): IBattleState {
-    const effectQueue = [...battleState.effectQueue, ...card.effectList];
-    const hand = battleState.hand.filter((c: ICard) => c !== card);
-    const discardPile = [...battleState.discardPile, card];
-    return {
-      ...battleState,
-      discardPile,
-      effectQueue,
-      hand,
-    };
+    return this.playCardCommonBehavior(battleState, card, card.effectList);
   }
 
   public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: IdentifiedCharacter): IBattleState {
     const effectToQueueList = card.effectList.map((effect) =>
       ('targetId' in effect) ? {...effect, target} : effect);
-    const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
-    const hand = battleState.hand.filter((c: ICard) => c !== card);
-    const discardPile = [...battleState.discardPile, card];
-    return {
-      ...battleState,
-      discardPile,
-      effectQueue,
-      hand,
-    };
+    return this.playCardCommonBehavior(battleState, card, effectToQueueList);
   }
 
   public static activateNextEffect(battleState: IBattleState): IBattleState {
@@ -78,5 +63,24 @@ export class BattleService {
 
   public static hasEffectToResolve(battleState: IBattleState): boolean {
     return battleState.effectQueue.length > 0;
+  }
+
+  private static playCardCommonBehavior(battleState: IBattleState, card: ICard, effectToQueueList: IEffect[]) {
+    if (battleState.mana < card.cost) {
+      // TODO fire an event to show a 'not enough mana' message
+      return battleState;
+    }
+
+    const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
+    const hand = battleState.hand.filter((c: ICard) => c !== card);
+    const discardPile = [...battleState.discardPile, card];
+    const mana = battleState.mana - card.cost;
+    return {
+      ...battleState,
+      discardPile,
+      effectQueue,
+      hand,
+      mana,
+    };
   }
 }

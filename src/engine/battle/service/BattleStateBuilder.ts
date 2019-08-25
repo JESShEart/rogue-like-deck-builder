@@ -67,6 +67,14 @@ export default class BattleStateBuilder {
     });
   }
 
+  public withMana(mana: number, maxMana: number): BattleStateBuilder {
+    return new BattleStateBuilder({
+      ...this.battleState,
+      mana,
+      maxMana,
+    });
+  }
+
   public putCardInDeck(card: ICard): BattleStateBuilder {
     const deck = [...this.battleState.deck, card];
     return new BattleStateBuilder({
