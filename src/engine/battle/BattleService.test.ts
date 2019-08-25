@@ -1,9 +1,9 @@
-import IBattleState from '../IBattleState';
-import {CardType, ITargetedCard, IUnTargetedCard} from '../ICard';
-import {CharacterType} from '../ICharacter';
-import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from '../IEffect';
 import {BattleService} from './BattleService';
 import BattleStateBuilder from './BattleStateBuilder';
+import IBattleState from './IBattleState';
+import {CardType, ITargetedCard, IUnTargetedCard} from './ICard';
+import {CharacterType} from './ICharacter';
+import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from './IEffect';
 
 const baseState: IBattleState = BattleStateBuilder.initial()
   .withMana(5, 5)

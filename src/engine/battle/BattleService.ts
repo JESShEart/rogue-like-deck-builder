@@ -1,8 +1,8 @@
-import IBattleState from '../IBattleState';
-import {ICard, ITargetedCard, IUnTargetedCard} from '../ICard';
-import {IdentifiedCharacter} from '../ICharacter';
-import {IEffect} from '../IEffect';
 import EffectService from './EffectService';
+import IBattleState from './IBattleState';
+import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
+import {IdentifiedCharacter} from './ICharacter';
+import {IEffect} from './IEffect';
 
 export class BattleService {
 

@@ -1,5 +1,5 @@
-import {CharacterType, IEnemyCharacter, IHeroCharacter} from '../ICharacter';
 import BattleStateBuilder from './BattleStateBuilder';
+import {CharacterType, IEnemyCharacter, IHeroCharacter} from './ICharacter';
 
 const hero: IHeroCharacter = {characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100};
 const enemy: IEnemyCharacter = {characterType: CharacterType.ENEMY, name: 'enemy', health: 100, maxHealth: 100};

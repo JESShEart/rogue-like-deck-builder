@@ -1,7 +1,7 @@
-import IBattleState from '../IBattleState';
-import {IdentifiedCharacter} from '../ICharacter';
-import {EffectType, ITargetedAmountEffect} from '../IEffect';
 import {BattleService} from './BattleService';
+import IBattleState from './IBattleState';
+import {IdentifiedCharacter} from './ICharacter';
+import {EffectType, ITargetedAmountEffect} from './IEffect';
 
 export default class EffectService {
 

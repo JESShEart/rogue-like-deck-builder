@@ -1,8 +1,8 @@
-import IBattleState from '../IBattleState';
-import {CharacterType} from '../ICharacter';
-import {EffectType} from '../IEffect';
 import BattleStateBuilder from './BattleStateBuilder';
 import EffectService from './EffectService';
+import IBattleState from './IBattleState';
+import {CharacterType} from './ICharacter';
+import {EffectType} from './IEffect';
 
 const baseState: IBattleState = BattleStateBuilder.initial()
   .withHero({characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100})

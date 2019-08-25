@@ -1,6 +1,6 @@
-import IBattleState from '../IBattleState';
-import {ICard} from '../ICard';
-import {IEnemyCharacter, IHeroCharacter} from '../ICharacter';
+import IBattleState from './IBattleState';
+import {ICard} from './ICard';
+import {IEnemyCharacter, IHeroCharacter} from './ICharacter';
 
 export default class BattleStateBuilder {
   public static initial(): BattleStateBuilder {
