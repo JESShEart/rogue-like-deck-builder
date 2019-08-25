@@ -1,13 +1,19 @@
 import {ICard} from './ICard';
-import {IdentifiedEnemy, IdentifiedHero} from './ICharacter';
+import {IIdentifiedCharacterMap} from './ICharacter';
 import {IEffect} from './IEffect';
 
 export default interface IBattleState {
-  hero: IdentifiedHero;
-  enemyList: IdentifiedEnemy[];
+  hero: number;
+  enemyList: number[];
+  characterMap: IIdentifiedCharacterMap;
+
   deck: ICard[];
   hand: ICard[];
   discardPile: ICard[];
+
+  activeEffect?: IEffect;
   effectQueue: IEffect[];
   effectLog: IEffect[];
+
+  nextId: number;
 }

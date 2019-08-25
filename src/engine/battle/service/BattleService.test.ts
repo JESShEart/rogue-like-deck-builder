@@ -1,18 +1,17 @@
 import IBattleState from '../IBattleState';
-import {CardType, IUnTargetedCard} from '../ICard';
+import {CardType, ITargetedCard, IUnTargetedCard} from '../ICard';
 import {CharacterType} from '../ICharacter';
 import {EffectType, ITargetedAmountEffect, IUnTargetedEffect} from '../IEffect';
 import {BattleService} from './BattleService';
+import BattleStateBuilder from './BattleStateBuilder';
 
-const baseState: IBattleState = {
-  deck: [],
-  discardPile: [],
-  effectLog: [],
-  effectQueue: [],
-  enemyList: [{id: 1, characterType: CharacterType.ENEMY, health: 100, maxHealth: 100}],
-  hand: [],
-  hero: {id: 0, characterType: CharacterType.HERO, health: 100, maxHealth: 100},
-};
+const baseState: IBattleState = BattleStateBuilder.initial()
+  .withHero({characterType: CharacterType.HERO, health: 100, maxHealth: 100})
+  .withEnemy({characterType: CharacterType.ENEMY, health: 100, maxHealth: 100})
+  .build();
+
+const HERO = baseState.hero;
+const ENEMY = baseState.enemyList[0];
 
 test('draw 1 card', () => {
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
@@ -25,7 +24,7 @@ test('draw 1 card', () => {
   expect(newState.deck.length).toBe(0);
 });
 
-test('play 1 card', () => {
+test('play 1 un-targeted card', () => {
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
   const state: IBattleState = {
     ...baseState,
@@ -36,43 +35,60 @@ test('play 1 card', () => {
   expect(newState.discardPile.length).toBe(1);
 });
 
+test('play 1 targeted card', () => {
+  const card: ITargetedCard = {cardType: CardType.TARGETED, name: 'card', cost: 1, effectList: []};
+  const state: IBattleState = {
+    ...baseState,
+    hand: [card],
+  };
+  const newState = BattleService.playTargetedCard(state, state.hand[0] as ITargetedCard, baseState.characterMap[ENEMY]);
+  expect(newState.hand.length).toBe(0);
+  expect(newState.discardPile.length).toBe(1);
+});
+
 test('activate 1 effect', () => {
   const effect: IUnTargetedEffect = {effectType: EffectType.UN_TARGETED};
-  const state: IBattleState = {
+  let state: IBattleState = {
     ...baseState,
     effectQueue: [effect],
   };
-  const newState = BattleService.resolveNextEffect(state);
-  expect(newState.effectQueue.length).toBe(0);
-  expect(newState.effectLog.length).toBe(1);
+  state = BattleService.activateNextEffect(state);
+  expect(state.effectQueue.length).toBe(0);
+  expect(state.activeEffect).toBe(effect);
+  state = BattleService.completeActiveEffect(state);
+  expect(state.activeEffect).toBe(undefined);
+  expect(state.effectQueue.length).toBe(0);
+  expect(state.effectLog.length).toBe(1);
 });
 
 test('activate damage effect', () => {
   const damageEffect: ITargetedAmountEffect = {
     amount: 5,
     effectType: EffectType.DAMAGE_TARGET,
-    targetId: baseState.enemyList[0].id,
+    targetId: ENEMY,
   };
 
-  const state: IBattleState = {
+  let state: IBattleState = {
     ...baseState,
     effectQueue: [damageEffect],
   };
 
-  const newState = BattleService.resolveNextEffect(state);
-  expect(newState.enemyList[0].health).toBe(95);
+  state = BattleService.activateNextEffect(state);
+  state = BattleService.completeActiveEffect(state);
+  expect(state.characterMap[ENEMY].health).toBe(95);
 });
 
 test('activate drawing effect', () => {
   const effect: IUnTargetedEffect = {effectType: EffectType.DRAW_EFFECT};
-  const state: IBattleState = {
+  let state: IBattleState = {
     ...baseState,
     deck: [{cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []}],
     effectQueue: [effect],
   };
-  const newState = BattleService.resolveNextEffect(state);
-  expect(newState.deck.length).toBe(0);
-  expect(newState.hand.length).toBe(1);
+  state = BattleService.activateNextEffect(state);
+  state = BattleService.completeActiveEffect(state);
+  expect(state.deck.length).toBe(0);
+  expect(state.hand.length).toBe(1);
 });
 
 test('has 3 effects to resolve', () => {
@@ -83,7 +99,8 @@ test('has 3 effects to resolve', () => {
   };
   let count = 0;
   while (BattleService.hasEffectToResolve(state)) {
-    state = BattleService.resolveNextEffect(state);
+    state = BattleService.activateNextEffect(state);
+    state = BattleService.completeActiveEffect(state);
     count++;
   }
   expect(count).toBe(3);

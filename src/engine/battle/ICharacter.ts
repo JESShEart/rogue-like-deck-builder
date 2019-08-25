@@ -25,3 +25,7 @@ export type IdentifiedEnemy = IIdentified & IEnemyCharacter;
 export type IdentifiedHero = IIdentified & IHeroCharacter;
 
 export type IdentifiedCharacter = IdentifiedEnemy | IdentifiedHero;
+
+export interface IIdentifiedCharacterMap {
+  [id: number]: IdentifiedCharacter;
+}

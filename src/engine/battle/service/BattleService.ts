@@ -40,7 +40,7 @@ export class BattleService {
 
   public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: IdentifiedCharacter): IBattleState {
     const effectToQueueList = card.effectList.map((effect) =>
-      ('target' in effect) ? {...effect, target} : effect);
+      ('targetId' in effect) ? {...effect, target} : effect);
     const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
     const hand = battleState.hand.filter((c: ICard) => c !== card);
     const discardPile = [...battleState.discardPile, card];
@@ -52,23 +52,26 @@ export class BattleService {
     };
   }
 
-  public static resolveNextEffect(battleState: IBattleState): IBattleState {
-    if (!BattleService.hasEffectToResolve(battleState)) { return battleState; }
-
-    const effect = battleState.effectQueue[0];
+  public static activateNextEffect(battleState: IBattleState): IBattleState {
+    if (battleState.activeEffect) {return battleState; }
+    if (!battleState.effectQueue.length) { return battleState; }
+    const activeEffect = battleState.effectQueue[0];
     const effectQueue = battleState.effectQueue.length > 1 ? battleState.effectQueue.slice(1) : [];
-
-    const beforeActivation = {
+    const effectActiveState = {
       ...battleState,
+      activeEffect,
       effectQueue,
     };
+    return EffectService.activate(effectActiveState);
+  }
 
-    const afterActivation =
-      EffectService.activate(beforeActivation, effect);
-
-    const effectLog = [...battleState.effectLog, effect];
+  public static completeActiveEffect(battleState: IBattleState): IBattleState {
+    if (!battleState.activeEffect) { return battleState; }
+    const effectLog = [...battleState.effectLog, battleState.activeEffect];
+    const activeEffect = undefined;
     return {
-      ...afterActivation,
+      ...battleState,
+      activeEffect,
       effectLog,
     };
   }
