@@ -16,7 +16,6 @@ const baseBattleHistory = {
 
 test('push', () => {
   const result = BattleStateHistoryService.push(baseBattleHistory, baseState2, true);
-  expect(result.history.keep).toBe(true);
   expect(result.history.timeline.length).toBe(2);
   expect(result.battleState).toBe(baseState2);
 });
