@@ -1,11 +1,12 @@
 import React from 'react';
 import {DropTarget} from 'react-drag-drop-container';
-import {IdentifiedCharacter} from '../engine/battle/ICharacter';
+import {CharacterType, IdentifiedCharacter} from '../engine/battle/ICharacter';
 import {IEffect} from '../engine/battle/IEffect';
-import logo from '../logo.svg';
 import CharacterEffectComponent from './character-effect.component';
 import './character.component.css';
 import HealthBarComponent from './health-bar.component';
+import Nightmare from './Nightmare.png';
+import Phoenix from './Phoenix.png';
 
 interface IProps {
   character: IdentifiedCharacter;
@@ -31,7 +32,7 @@ export default class CharacterComponent extends React.Component<IProps> {
       >
         {CharacterComponent.renderEffect(this.props.character, this.props.effect)}
         <DropTarget
-          targetKey='character'
+          targetKey={this.props.character.characterType === CharacterType.ENEMY ? 'character' : 'hero'}
           dropData={this.props.character.id}
         >
           {this.props.character.name}
@@ -39,7 +40,7 @@ export default class CharacterComponent extends React.Component<IProps> {
             character={this.props.character}
           />
           <div>
-            <img src={logo} className='App-logo' alt='logo'/>
+            <img src={this.props.character.characterType === CharacterType.ENEMY ? Nightmare : Phoenix} className='App-logo' alt='logo'/>
           </div>
         </DropTarget>
       </div>

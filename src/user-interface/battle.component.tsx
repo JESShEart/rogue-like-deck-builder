@@ -71,6 +71,10 @@ export default class BattleComponent extends React.Component<any, IBattleStateHi
     return (
       <div>
         <CharacterComponent
+          character={this.state.battleState.characterMap[this.state.battleState.hero]}
+          effect={this.state.battleState.activeEffect}
+        />
+        <CharacterComponent
           character={this.state.battleState.characterMap[this.state.battleState.enemyList[0]]}
           effect={this.state.battleState.activeEffect}
         />
