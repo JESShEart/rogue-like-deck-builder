@@ -40,14 +40,15 @@ export default class BattleManager {
     }
     const tester = BattleTesterService;
     const battleState = this.battleStateHistory.battleState;
+
+    if (tester.shouldCompleteEffect(battleState)) {
+      this.next(BattleService.completeActiveEffect(battleState));
+    }
+
     if (tester.shouldActivateNextEffect(battleState)) {
       this.next(BattleService.activateNextEffect(battleState));
-    } else if (tester.shouldCompleteEffect(battleState)) {
-      this.next(BattleService.completeActiveEffect(battleState));
-      if (tester.shouldActivateNextEffect(battleState)) {
-        this.next(BattleService.activateNextEffect(battleState));
-      }
     }
+
     this.stateResponder(this.battleStateHistory);
   }
 
