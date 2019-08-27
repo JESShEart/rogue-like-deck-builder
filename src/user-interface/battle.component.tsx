@@ -2,19 +2,16 @@ import React from 'react';
 import BattleManager from '../engine/battle/BattleManager';
 import BattleStateBuilder from '../engine/battle/BattleStateBuilder';
 import IBattleState from '../engine/battle/IBattleState';
+import IBattleStateHistory from '../engine/battle/IBattleStateHistory';
 import {CardType, ICard, ITargetedCard} from '../engine/battle/ICard';
 import {CharacterType} from '../engine/battle/ICharacter';
 import {EffectType} from '../engine/battle/IEffect';
+import IHistory, {InitialHistory} from '../engine/battle/IHistory';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
 import TimeTravelComponent from './time-travel.component';
 
-interface IState {
-  battleState: IBattleState;
-  timeTraveling: boolean;
-}
-
-export default class BattleComponent extends React.Component<any, IState> {
+export default class BattleComponent extends React.Component<any, IBattleStateHistory> {
   private battleManager: BattleManager;
   private animationDelay;
 
@@ -22,7 +19,6 @@ export default class BattleComponent extends React.Component<any, IState> {
     super(props);
 
     this.updateBattleState = this.updateBattleState.bind(this);
-    this.updateTimeTraveling = this.updateTimeTraveling.bind(this);
     this.playCard = this.playCard.bind(this);
     this.goBack = this.goBack.bind(this);
     this.goForward = this.goForward.bind(this);
@@ -59,17 +55,15 @@ export default class BattleComponent extends React.Component<any, IState> {
       ...battleStateWithoutCards,
       hand: [{...fiveDamage}, {...fiveDamage}, {...sevenDamage}, {...sevenDamage}],
     };
-    const timeTraveling = false;
-
+    const history: IHistory = new InitialHistory(battleState);
     this.state = {
       battleState,
-      timeTraveling,
+      history,
     };
 
     this.battleManager = new BattleManager(
-      this.state.battleState,
+      this.state,
       this.updateBattleState,
-      this.updateTimeTraveling,
     );
   }
 
@@ -92,7 +86,7 @@ export default class BattleComponent extends React.Component<any, IState> {
           Mana {this.state.battleState.mana} / {this.state.battleState.maxMana}
         </p>
         <TimeTravelComponent
-          timeTraveling={this.state.timeTraveling}
+          timeTraveling={this.state.history.timeTraveling}
           goBack={this.goBack}
           goForward={this.goForward}
           resume={this.resume}
@@ -101,9 +95,9 @@ export default class BattleComponent extends React.Component<any, IState> {
     );
   }
 
-  private updateBattleState(battleState: IBattleState) {
-    this.setState({battleState});
-    if (battleState.activeEffect) {
+  private updateBattleState(battleStateHistory: IBattleStateHistory) {
+    this.setState(battleStateHistory);
+    if (battleStateHistory.battleState.activeEffect) {
       if (this.animationDelay) { clearTimeout(this.animationDelay); }
       this.animationDelay = setTimeout(() => {
         this.battleManager.run();
@@ -122,10 +116,6 @@ export default class BattleComponent extends React.Component<any, IState> {
 
   private resume() {
     this.battleManager.resume();
-  }
-
-  private updateTimeTraveling(timeTraveling: boolean) {
-    this.setState({timeTraveling});
   }
 
   private playCard(card: ICard, targetId: number) {

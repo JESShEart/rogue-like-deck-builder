@@ -1,10 +1,10 @@
 import IBattleState from './IBattleState';
+import {ICard} from './ICard';
 
 export default class BattleTesterService {
   public static shouldActivateNextEffect(battleState: IBattleState): boolean {
     if (battleState.activeEffect) {return false; }
-    if (!battleState.effectQueue.length) { return false; }
-    return true;
+    return !!battleState.effectQueue.length;
   }
 
   public static shouldCompleteEffect(battleState: IBattleState): boolean {
@@ -15,8 +15,11 @@ export default class BattleTesterService {
 
   public static canPlayCard(battleState: IBattleState): boolean {
     if (battleState.activeEffect) {return false; }
-    if (battleState.effectQueue.length) {return false; }
-    return true;
+    return !battleState.effectQueue.length;
+  }
+
+  public static cardWillSucceed(battleState: IBattleState, card: ICard): boolean {
+    return battleState.mana >= card.cost;
   }
 
   public static isPlayerTurn(battleState: IBattleState): boolean {

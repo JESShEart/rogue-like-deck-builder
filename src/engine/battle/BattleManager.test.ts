@@ -1,4 +1,3 @@
-import BattleManager from './BattleManager';
 import BattleStateBuilder from './BattleStateBuilder';
 import IBattleState from './IBattleState';
 import {CharacterType, IEnemyCharacter, IHeroCharacter} from './ICharacter';
@@ -19,6 +18,4 @@ test('battle manager', () => {
   const timeTravelingCallback = (isTimeTraveling: boolean) => {
     return;
   };
-  const battleManager = new BattleManager(initialState, stateResponder, timeTravelingCallback);
-  expect(battleManager). toBeTruthy();
 });
