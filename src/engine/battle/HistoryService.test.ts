@@ -13,19 +13,17 @@ const baseState4: IBattleState = {...baseState1, mana: 3};
 
 const baseHistory: IHistory = {
   index: -1,
-  keep: true,
   timeTraveling: false,
   timeline: [],
 };
 
 test('push, keep false overwrites last', () => {
-  let result = HistoryService.push(baseHistory, baseState1, true);
+  let result = HistoryService.push(baseHistory, baseState1);
   result = HistoryService.push(result, baseState2, true);
   result = HistoryService.push(result, baseState3);
   result = HistoryService.push(result, baseState4);
 
   expect(result.index).toBe(1);
-  expect(result.keep).toBe(false);
   expect(result.timeTraveling).toBe(false);
   expect(result.timeline.length).toBe(2);
   expect(result.timeline[0]).toBe(baseState1);
@@ -35,7 +33,6 @@ test('push, keep false overwrites last', () => {
 test('push', () => {
   const result = HistoryService.push(baseHistory, baseState1, true);
   expect(result.index).toBe(0);
-  expect(result.keep).toBe(true);
   expect(result.timeTraveling).toBe(false);
   expect(result.timeline.length).toBe(1);
   expect(result.timeline[0]).toBe(baseState1);

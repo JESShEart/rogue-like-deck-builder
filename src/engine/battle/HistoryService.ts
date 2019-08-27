@@ -9,7 +9,6 @@ export default class HistoryService {
     const index = timeline.length - 1;
     return {
       index,
-      keep,
       timeTraveling,
       timeline,
     };

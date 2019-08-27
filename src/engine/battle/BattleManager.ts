@@ -18,7 +18,7 @@ export default class BattleManager {
   }
 
   public resume(): void {
-    if (!this.battleStateHistory.history.timeTraveling) { return; }
+    if (!this.isTimeTraveling()) { return; }
     this.battleStateHistory = BattleStateHistoryService.resume(this.battleStateHistory);
     this.run();
   }
@@ -34,10 +34,6 @@ export default class BattleManager {
   }
 
   public run(): void {
-    if (this.isTimeTraveling()) {
-      // user must explicitly choose to resume
-      return;
-    }
     const tester = BattleTesterService;
     const battleState = this.battleStateHistory.battleState;
 
