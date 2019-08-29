@@ -2,7 +2,7 @@ import HistoryService from './HistoryService';
 import IBattleState from './IBattleState';
 import IBattleStateHistory from './IBattleStateHistory';
 
-export default class IBattleStateHistoryService {
+export default class BattleStateHistoryService {
   public static push(battleStateHistory: IBattleStateHistory, battleState: IBattleState, keep: boolean = false): IBattleStateHistory {
     const history = HistoryService.push(battleStateHistory.history, battleState, keep);
     return {
