@@ -1,80 +1,80 @@
+import BattleHistoryService from './BattleHistoryService';
 import {BattleService} from './BattleService';
-import BattleStateHistoryService from './BattleStateHistoryService';
 import BattleTesterService from './BattleTesterService';
-import IBattleState from './IBattleState';
-import IBattleStateHistory from './IBattleStateHistory';
+import IBattle from './IBattle';
+import IBattleHistory from './IBattleHistory';
 import {CardType, ICard} from './ICard';
 
-export type StateResponder = (battleStateHistory: IBattleStateHistory) => void;
+export type Responder = (battleHistory: IBattleHistory) => void;
 
 export default class BattleManager {
-  private battleStateHistory: IBattleStateHistory;
+  private battleHistory: IBattleHistory;
 
-  private readonly stateResponder: StateResponder;
+  private readonly responder: Responder;
 
-  constructor(battleStateHistory: IBattleStateHistory, stateResponder: StateResponder) {
-    this.battleStateHistory = battleStateHistory;
-    this.stateResponder = stateResponder;
+  constructor(battleHistory: IBattleHistory, responder: Responder) {
+    this.battleHistory = battleHistory;
+    this.responder = responder;
   }
 
   public resume(): void {
     if (!this.isTimeTraveling()) { return; }
-    this.battleStateHistory = BattleStateHistoryService.resume(this.battleStateHistory);
+    this.battleHistory = BattleHistoryService.resume(this.battleHistory);
     this.run();
   }
 
   public goBack(): void {
-    this.battleStateHistory = BattleStateHistoryService.goBack(this.battleStateHistory);
-    this.stateResponder(this.battleStateHistory);
+    this.battleHistory = BattleHistoryService.goBack(this.battleHistory);
+    this.responder(this.battleHistory);
   }
 
   public goForward(): void {
-    this.battleStateHistory = BattleStateHistoryService.goForward(this.battleStateHistory);
-    this.stateResponder(this.battleStateHistory);
+    this.battleHistory = BattleHistoryService.goForward(this.battleHistory);
+    this.responder(this.battleHistory);
   }
 
   public run(): void {
     const tester = BattleTesterService;
-    const battleState = this.battleStateHistory.battleState;
+    const battle = this.battleHistory.battle;
 
-    if (tester.shouldCompleteEffect(battleState)) {
-      this.next(BattleService.completeActiveEffect(battleState));
+    if (tester.shouldCompleteEffect(battle)) {
+      this.next(BattleService.completeActiveEffect(battle));
     }
 
-    if (tester.shouldActivateNextEffect(battleState)) {
-      this.next(BattleService.activateNextEffect(battleState));
+    if (tester.shouldActivateNextEffect(battle)) {
+      this.next(BattleService.activateNextEffect(battle));
     }
 
-    this.stateResponder(this.battleStateHistory);
+    this.responder(this.battleHistory);
   }
 
   public playCard(card: ICard, targetId: number = -1): void {
     const tester = BattleTesterService;
-    const battleState = this.battleStateHistory.battleState;
-    if (!tester.isPlayerTurn(battleState)) { return; }
+    const battle = this.battleHistory.battle;
+    if (!tester.isPlayerTurn(battle)) { return; }
     if (this.isTimeTraveling()) { this.resume(); }
-    while (!tester.canPlayCard(battleState)) {
+    while (!tester.canPlayCard(battle)) {
       // basically fast forwarding to let this card get played
       this.run();
     }
 
-    if (!tester.cardWillSucceed(battleState, card)) { return; }
+    if (!tester.cardWillSucceed(battle, card)) { return; }
 
     if (card.cardType === CardType.UN_TARGETED) {
-      this.next(BattleService.playUnTargetedCard(battleState, card), true);
+      this.next(BattleService.playUnTargetedCard(battle, card), true);
     } else {
-      const target = battleState.characterMap[targetId];
-      this.next(BattleService.playTargetedCard(battleState, card, target), true);
+      const target = battle.characterMap[targetId];
+      this.next(BattleService.playTargetedCard(battle, card, target), true);
     }
 
     this.run();
   }
 
   private isTimeTraveling(): boolean {
-    return this.battleStateHistory.history.timeTraveling;
+    return this.battleHistory.history.timeTraveling;
   }
 
-  private next(battleState: IBattleState, keep: boolean = false): void {
-    this.battleStateHistory = BattleStateHistoryService.push(this.battleStateHistory, battleState, keep);
+  private next(battle: IBattle, keep: boolean = false): void {
+    this.battleHistory = BattleHistoryService.push(this.battleHistory, battle, keep);
   }
 }

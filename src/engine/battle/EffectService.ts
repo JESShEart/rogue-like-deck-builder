@@ -1,77 +1,77 @@
 import {BattleService} from './BattleService';
-import IBattleState from './IBattleState';
+import IBattle from './IBattle';
 import {IdentifiedCharacter} from './ICharacter';
 import {EffectType, ITargetedAmountEffect} from './IEffect';
 
 export default class EffectService {
 
   // this is effectively a "factory" that executes a function based on the effect's effectType enum
-  public static activate(battleState: IBattleState): IBattleState {
-    if (!battleState.activeEffect) { return battleState; }
-    switch (battleState.activeEffect.effectType) {
+  public static activate(battle: IBattle): IBattle {
+    if (!battle.activeEffect) { return battle; }
+    switch (battle.activeEffect.effectType) {
 
       case EffectType.DAMAGE_TARGET:
-        return EffectService.damage(battleState, battleState.activeEffect);
+        return EffectService.damage(battle, battle.activeEffect);
 
       case EffectType.HEAL_TARGET:
-        return EffectService.heal(battleState, battleState.activeEffect);
+        return EffectService.heal(battle, battle.activeEffect);
 
       case EffectType.DRAW_EFFECT:
-        return BattleService.draw(battleState);
+        return BattleService.draw(battle);
 
       // these are dummy testing effects that do nothing
       case EffectType.UN_TARGETED:
       case EffectType.TARGETED:
       default:
-        return battleState;
+        return battle;
     }
   }
 
   private static damage(
-    battleState: IBattleState,
+    battle: IBattle,
     effect: ITargetedAmountEffect,
-  ): IBattleState {
-    if (!effect.targetId) { return battleState; }
-    if (effect.amount <= 0) { return battleState; }
+  ): IBattle {
+    if (!effect.targetId) { return battle; }
+    if (effect.amount <= 0) { return battle; }
 
-    const target = battleState.characterMap[effect.targetId];
-    if (!target) { return battleState; }
+    const target = battle.characterMap[effect.targetId];
+    if (!target) { return battle; }
 
     const damage = effect.amount < target.health ? effect.amount : target.health;
     const health = target.health - damage;
-    const newCharacterState = {
+    const newCharacter = {
       ...target,
       health,
     };
 
-    return this.updateCharacter(battleState, newCharacterState);
+    return this.updateCharacter(battle, newCharacter);
   }
 
-  private static heal(battleState: IBattleState, effect: ITargetedAmountEffect): IBattleState {
-    if (!effect.targetId) { return battleState; }
-    if (effect.amount <= 0) { return battleState; }
+  private static heal(battle: IBattle, effect: ITargetedAmountEffect): IBattle {
+    if (!effect.targetId) { return battle; }
+    if (effect.amount <= 0) { return battle; }
 
-    const target = battleState.characterMap[effect.targetId];
-    if (!target) { return battleState; }
+    const target = battle.characterMap[effect.targetId];
+    if (!target) { return battle; }
 
     const totalHealed = target.health + effect.amount;
     const health =  totalHealed < target.maxHealth ? totalHealed : target.maxHealth;
-    const newCharacterState = {
+    const newCharacter = {
       ...target,
       health,
     };
 
-    return this.updateCharacter(battleState, newCharacterState);
+    return this.updateCharacter(battle, newCharacter);
   }
 
-  private static updateCharacter(battleState: IBattleState, character: IdentifiedCharacter) {
+  private static updateCharacter(battle: IBattle, character: IdentifiedCharacter) {
     const characterMap = {
-      ...battleState.characterMap,
+      ...battle.characterMap,
       [character.id]: character,
     };
 
     return {
-      ...battleState,
+      ...battle,
       characterMap,
     };
   }

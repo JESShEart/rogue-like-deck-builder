@@ -1,11 +1,11 @@
-import IBattleState from './IBattleState';
+import IBattle from './IBattle';
 import IHistory from './IHistory';
 
 export default class HistoryService {
-  public static push(history: IHistory, battleState: IBattleState, keep: boolean = false): IHistory {
+  public static push(history: IHistory, battle: IBattle, keep: boolean = false): IHistory {
     const timeTraveling = false;
     const kept = keep ? history.timeline : history.timeline.slice(0, history.timeline.length - 1);
-    const timeline = [...kept, battleState];
+    const timeline = [...kept, battle];
     const index = timeline.length - 1;
     return {
       index,

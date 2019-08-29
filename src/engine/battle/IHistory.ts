@@ -1,17 +1,17 @@
-import IBattleState from './IBattleState';
+import IBattle from './IBattle';
 
 export default interface IHistory {
   readonly timeTraveling: boolean;
   readonly index: number;
-  readonly timeline: IBattleState[];
+  readonly timeline: IBattle[];
 }
 
 export class InitialHistory implements IHistory {
   public readonly timeTraveling: boolean = false;
   public readonly index: number = 0;
-  public readonly timeline: IBattleState[];
+  public readonly timeline: IBattle[];
 
-  constructor(initialBattleState: IBattleState) {
-    this.timeline = [initialBattleState];
+  constructor(initialBattle: IBattle) {
+    this.timeline = [initialBattle];
   }
 }

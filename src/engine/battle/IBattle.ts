@@ -2,7 +2,7 @@ import {ICard} from './ICard';
 import {IIdentifiedCharacterMap} from './ICharacter';
 import {IEffect} from './IEffect';
 
-export default interface IBattleState {
+export default interface IBattle {
   readonly mana: number;
   readonly maxMana: number;
 

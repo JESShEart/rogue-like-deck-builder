@@ -1,76 +1,76 @@
 import EffectService from './EffectService';
-import IBattleState from './IBattleState';
+import IBattle from './IBattle';
 import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
 import {IdentifiedCharacter} from './ICharacter';
 import {IEffect} from './IEffect';
 
 export class BattleService {
 
-  public static draw(battleState: IBattleState, quantity: number = 1): IBattleState {
+  public static draw(battle: IBattle, quantity: number = 1): IBattle {
     // TODO check and handle for edge cases, like not enough cards to draw, hand too large, whatever...
-    const drawn = battleState.deck.slice(0, quantity);
-    const deck = battleState.deck.slice(quantity, battleState.deck.length);
-    const hand = [...drawn, ...battleState.hand];
+    const drawn = battle.deck.slice(0, quantity);
+    const deck = battle.deck.slice(quantity, battle.deck.length);
+    const hand = [...drawn, ...battle.hand];
     return {
-      ...battleState,
+      ...battle,
       deck,
       hand,
     };
   }
 
-  public static shuffle(battleState: IBattleState): IBattleState {
-    const deck = [...battleState.deck, ...battleState.discardPile];
+  public static shuffle(battle: IBattle): IBattle {
+    const deck = [...battle.deck, ...battle.discardPile];
     // TODO shuffle the deck here
     return {
-      ...battleState,
+      ...battle,
       deck,
     };
   }
 
-  public static playUnTargetedCard(battleState: IBattleState, card: IUnTargetedCard): IBattleState {
-    return this.playCardCommonBehavior(battleState, card, card.effectList);
+  public static playUnTargetedCard(battle: IBattle, card: IUnTargetedCard): IBattle {
+    return this.playCardCommonBehavior(battle, card, card.effectList);
   }
 
-  public static playTargetedCard(battleState: IBattleState, card: ITargetedCard, target: IdentifiedCharacter): IBattleState {
+  public static playTargetedCard(battle: IBattle, card: ITargetedCard, target: IdentifiedCharacter): IBattle {
     const targetId = target.id;
     const effectToQueueList = card.effectList.map((effect) => ({...effect, targetId}));
-    return this.playCardCommonBehavior(battleState, card, effectToQueueList);
+    return this.playCardCommonBehavior(battle, card, effectToQueueList);
   }
 
-  public static activateNextEffect(battleState: IBattleState): IBattleState {
-    const activeEffect = battleState.effectQueue[0];
-    const effectQueue = battleState.effectQueue.length > 1 ? battleState.effectQueue.slice(1) : [];
-    const effectActiveState = {
-      ...battleState,
+  public static activateNextEffect(battle: IBattle): IBattle {
+    const activeEffect = battle.effectQueue[0];
+    const effectQueue = battle.effectQueue.length > 1 ? battle.effectQueue.slice(1) : [];
+    const effectActive = {
+      ...battle,
       activeEffect,
       effectQueue,
     };
-    return EffectService.activate(effectActiveState);
+    return EffectService.activate(effectActive);
   }
 
-  public static completeActiveEffect(battleState: IBattleState): IBattleState {
-    if (!battleState.activeEffect) { return battleState; }
-    const effectLog = [...battleState.effectLog, battleState.activeEffect];
+  public static completeActiveEffect(battle: IBattle): IBattle {
+    if (!battle.activeEffect) { return battle; }
+    const effectLog = [...battle.effectLog, battle.activeEffect];
     const activeEffect = undefined;
     return {
-      ...battleState,
+      ...battle,
       activeEffect,
       effectLog,
     };
   }
 
-  private static playCardCommonBehavior(battleState: IBattleState, card: ICard, effectToQueueList: IEffect[]) {
-    if (battleState.mana < card.cost) {
+  private static playCardCommonBehavior(battle: IBattle, card: ICard, effectToQueueList: IEffect[]) {
+    if (battle.mana < card.cost) {
       // TODO fire an event to show a 'not enough mana' message
-      return battleState;
+      return battle;
     }
 
-    const effectQueue = [...battleState.effectQueue, ...effectToQueueList];
-    const hand = battleState.hand.filter((c: ICard) => c !== card);
-    const discardPile = [...battleState.discardPile, card];
-    const mana = battleState.mana - card.cost;
+    const effectQueue = [...battle.effectQueue, ...effectToQueueList];
+    const hand = battle.hand.filter((c: ICard) => c !== card);
+    const discardPile = [...battle.discardPile, card];
+    const mana = battle.mana - card.cost;
     return {
-      ...battleState,
+      ...battle,
       discardPile,
       effectQueue,
       hand,
