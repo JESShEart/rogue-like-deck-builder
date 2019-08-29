@@ -22,6 +22,10 @@ export default class BattleTesterService {
     return battleState.mana >= card.cost;
   }
 
+  public static waitingForPlayerChoice(battleState: IBattleState): boolean {
+    return false;
+  }
+
   public static isPlayerTurn(battleState: IBattleState): boolean {
     return true;
   }
