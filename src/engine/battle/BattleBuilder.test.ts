@@ -1,4 +1,5 @@
 import BattleBuilder from './BattleBuilder';
+import {Phase} from './IBattle';
 import {CharacterType, IEnemyCharacter, IHeroCharacter} from './ICharacter';
 
 const hero: IHeroCharacter = {characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100};
@@ -61,4 +62,21 @@ test('build initial with mana', () => {
   const {mana, maxMana} = battle;
   expect(mana).toBe(1);
   expect(maxMana).toBe(2);
+});
+
+test('build initial with phase', () => {
+  const battle = BattleBuilder.initial()
+    .withHero(hero)
+    .withPhase(Phase.PLAYER_ACTION)
+    .build();
+  const {phase} = battle;
+  expect(phase).toBe(Phase.PLAYER_ACTION);
+});
+
+test('build initial without phase', () => {
+  const battle = BattleBuilder.initial()
+    .withHero(hero)
+    .build();
+  const {phase} = battle;
+  expect(phase).toBe(Phase.UPKEEP);
 });

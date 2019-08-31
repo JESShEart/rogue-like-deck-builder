@@ -1,4 +1,4 @@
-import IBattle from './IBattle';
+import IBattle, {Phase} from './IBattle';
 import {ICard} from './ICard';
 import {IEnemyCharacter, IHeroCharacter} from './ICharacter';
 
@@ -24,6 +24,7 @@ export default class BattleBuilder {
     mana: 0,
     maxMana: 0,
     nextId: 1,
+    phase: Phase.UPKEEP,
   };
 
   private readonly battle;
@@ -72,6 +73,13 @@ export default class BattleBuilder {
       ...this.battle,
       mana,
       maxMana,
+    });
+  }
+
+  public withPhase(phase: Phase): BattleBuilder {
+    return new BattleBuilder({
+      ...this.battle,
+      phase,
     });
   }
 

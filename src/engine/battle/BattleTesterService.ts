@@ -1,4 +1,4 @@
-import IBattle from './IBattle';
+import IBattle, {Phase} from './IBattle';
 import {ICard} from './ICard';
 
 export default class BattleTesterService {
@@ -23,10 +23,12 @@ export default class BattleTesterService {
   }
 
   public static waitingForPlayerChoice(battle: IBattle): boolean {
+    if (!battle.activeEffect) { return false; }
+    // TODO determine if the effect requires user feedback
     return false;
   }
 
   public static isPlayerTurn(battle: IBattle): boolean {
-    return true;
+    return battle.phase === Phase.PLAYER_ACTION;
   }
 }
