@@ -2,6 +2,14 @@ import IBattle from './IBattle';
 import IHistory from './IHistory';
 
 export default class HistoryService {
+
+  public static timeTravel(history: IHistory): IHistory {
+    return {
+      ...history,
+      timeTraveling: true,
+    };
+  }
+
   public static push(history: IHistory, battle: IBattle, keep: boolean = false): IHistory {
     const timeTraveling = false;
     const kept = keep ? history.timeline : history.timeline.slice(0, history.timeline.length - 1);

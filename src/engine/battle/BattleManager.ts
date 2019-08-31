@@ -1,6 +1,7 @@
 import BattleHistoryService from './BattleHistoryService';
 import {BattleService} from './BattleService';
 import BattleTesterService from './BattleTesterService';
+import HistoryService from './HistoryService';
 import IBattle from './IBattle';
 import IBattleHistory from './IBattleHistory';
 import {CardType, ICard} from './ICard';
@@ -75,6 +76,9 @@ export default class BattleManager {
   }
 
   private next(battle: IBattle, keep: boolean = false): void {
-    this.battleHistory = BattleHistoryService.push(this.battleHistory, battle, keep);
+    this.battleHistory = {
+      battle,
+      history: HistoryService.push(this.battleHistory.history, battle, keep),
+    };
   }
 }

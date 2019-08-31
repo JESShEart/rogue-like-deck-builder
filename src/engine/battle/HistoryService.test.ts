@@ -175,3 +175,8 @@ test('reset no history', () => {
   expect(result.timeTraveling).toBe(false);
   expect(result.timeline.length).toBe(0);
 });
+
+test('set timetraveling', () => {
+  const result = HistoryService.timeTravel(baseHistory);
+  expect(result.timeTraveling).toBe(true);
+});
