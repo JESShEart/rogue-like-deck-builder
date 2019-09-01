@@ -1,18 +1,16 @@
 import React from 'react';
-import BattleBuilder from '../engine/battle/BattleBuilder';
-import BattleManager from '../engine/battle/BattleManager';
-import IBattle from '../engine/battle/IBattle';
+import BattleHistoryService from '../engine/battle/BattleHistoryService';
 import IBattleHistory from '../engine/battle/IBattleHistory';
-import {CardType, ICard, ITargetedCard} from '../engine/battle/ICard';
-import {CharacterType} from '../engine/battle/ICharacter';
-import {EffectType} from '../engine/battle/IEffect';
-import IHistory, {InitialHistory} from '../engine/battle/IHistory';
+import {ICard} from '../engine/battle/ICard';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
 import TimeTravelComponent from './time-travel.component';
 
-export default class BattleComponent extends React.Component<any, IBattleHistory> {
-  private battleManager: BattleManager;
+interface IProps {
+  initialState: IBattleHistory;
+}
+
+export default class BattleComponent extends React.Component<IProps, IBattleHistory> {
   private animationDelay;
 
   constructor(props: any) {
@@ -24,47 +22,7 @@ export default class BattleComponent extends React.Component<any, IBattleHistory
     this.goForward = this.goForward.bind(this);
     this.resume = this.resume.bind(this);
 
-    const battleWithoutCards = BattleBuilder.initial()
-      .withHero({characterType: CharacterType.HERO, name: 'Hero', health: 100, maxHealth: 100})
-      .withEnemy({characterType: CharacterType.ENEMY, name: 'Enemy 1', health: 100, maxHealth: 100})
-      .withEnemy({characterType: CharacterType.ENEMY, name: 'Enemy 2', health: 100, maxHealth: 100})
-      .withMana(5, 5)
-      .build();
-
-    const fiveDamage: ITargetedCard = {
-      cardType: CardType.TARGETED,
-      cost: 1,
-      effectList: [{
-        amount: 5,
-        effectType: EffectType.DAMAGE_TARGET,
-      }],
-      name: '5 Damage',
-    };
-
-    const sevenDamage: ITargetedCard = {
-      cardType: CardType.TARGETED,
-      cost: 2,
-      effectList: [{
-        amount: 7,
-        effectType: EffectType.DAMAGE_TARGET,
-      }],
-      name: '7 Damage',
-    };
-
-    const battle: IBattle = {
-      ...battleWithoutCards,
-      hand: [{...fiveDamage}, {...fiveDamage}, {...sevenDamage}, {...sevenDamage}],
-    };
-    const history: IHistory = new InitialHistory(battle);
-    this.state = {
-      battle,
-      history,
-    };
-
-    this.battleManager = new BattleManager(
-      this.state,
-      this.updateBattle,
-    );
+    this.state = this.props.initialState;
   }
 
   public render() {
@@ -99,30 +57,33 @@ export default class BattleComponent extends React.Component<any, IBattleHistory
     );
   }
 
+  private goBack() {
+    this.setState(BattleHistoryService.goBack(this.state));
+  }
+
+  private goForward() {
+    this.setState(BattleHistoryService.goForward(this.state));
+  }
+
+  private resume() {
+    this.updateBattle(BattleHistoryService.resume(this.state));
+  }
+
+  private playCard(card: ICard, targetId: number) {
+    this.updateBattle(BattleHistoryService.playCard(this.state, card, targetId));
+  }
+
   private updateBattle(battleHistory: IBattleHistory) {
     this.setState(battleHistory);
     if (battleHistory.battle.activeEffect) {
-      if (this.animationDelay) { clearTimeout(this.animationDelay); }
+      if (this.animationDelay) {
+        clearTimeout(this.animationDelay);
+      }
       this.animationDelay = setTimeout(() => {
-        this.battleManager.run();
         this.animationDelay = undefined;
+        this.updateBattle(BattleHistoryService.run(battleHistory));
       }, 750);
     }
   }
 
-  private goBack() {
-    this.battleManager.goBack();
-  }
-
-  private goForward() {
-    this.battleManager.goForward();
-  }
-
-  private resume() {
-    this.battleManager.resume();
-  }
-
-  private playCard(card: ICard, targetId: number) {
-    this.battleManager.playCard(card, targetId);
-  }
 }
