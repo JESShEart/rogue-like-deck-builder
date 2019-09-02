@@ -1,6 +1,7 @@
 import IBattle, {Phase} from './IBattle';
 import {ICard} from './ICard';
 import {IEnemyCharacter, IHeroCharacter} from './ICharacter';
+import {IEffect} from './IEffect';
 
 export default class BattleBuilder {
   public static initial(): BattleBuilder {
@@ -13,6 +14,7 @@ export default class BattleBuilder {
 
   private static readonly defaultBattle: IBattle = {
     activeEffect: undefined,
+    cardMap: {},
     characterMap: {},
     deck: [],
     discardPile: [],
@@ -83,19 +85,38 @@ export default class BattleBuilder {
     });
   }
 
-  public putCardInDeck(card: ICard): BattleBuilder {
-    const deck = [...this.battle.deck, card];
+  public withEffectInQueue(effect: IEffect): BattleBuilder {
     return new BattleBuilder({
       ...this.battle,
+      effectQueue: [...this.battle.effectQueue, effect],
+    });
+  }
+
+  public putCardInDeck(card: ICard): BattleBuilder {
+    const id = this.battle.nextId;
+    const nextId = id + 1;
+    const identifiedCard = {id, ...card};
+    const cardMap = {...this.battle.cardMap, [id]: identifiedCard};
+    const deck = [...this.battle.deck, id];
+    return new BattleBuilder({
+      ...this.battle,
+      cardMap,
       deck,
+      nextId,
     });
   }
 
   public putCardInHand(card: ICard): BattleBuilder {
-    const hand = [...this.battle.hand, card];
+    const id = this.battle.nextId;
+    const nextId = id + 1;
+    const identifiedCard = {id, ...card};
+    const cardMap = {...this.battle.cardMap, [id]: identifiedCard};
+    const hand = [...this.battle.hand, id];
     return new BattleBuilder({
       ...this.battle,
+      cardMap,
       hand,
+      nextId,
     });
   }
 }

@@ -1,11 +1,11 @@
 import React from 'react';
 import {DragDropContainer} from 'react-drag-drop-container';
-import {ICard} from '../engine/battle/ICard';
+import {IdentifiedCard} from '../engine/battle/ICard';
 import './card.component.css';
 
 interface IProps {
-  card: ICard;
-  onClick: (card: ICard, targetId: number) => any;
+  card: IdentifiedCard;
+  onClick: (cardId: number, targetId: number) => any;
 }
 
 export default class CardComponent extends React.Component<IProps> {
@@ -30,6 +30,6 @@ export default class CardComponent extends React.Component<IProps> {
   }
 
   private cardClicked({dropData}) {
-    this.props.onClick(this.props.card, dropData);
+    this.props.onClick(this.props.card.id, dropData);
   }
 }

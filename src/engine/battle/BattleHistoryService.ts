@@ -1,9 +1,7 @@
 import {BattleService} from './BattleService';
 import BattleTesterService from './BattleTesterService';
 import HistoryService from './HistoryService';
-import IBattle from './IBattle';
 import IBattleHistory from './IBattleHistory';
-import {CardType, ICard} from './ICard';
 
 export default class BattleHistoryService {
 
@@ -67,7 +65,7 @@ export default class BattleHistoryService {
     };
   }
 
-  public static playCard(battleHistory: IBattleHistory, card: ICard, targetId: number = -1): IBattleHistory {
+  public static playCard(battleHistory: IBattleHistory, cardId: number, targetId: number = -1): IBattleHistory {
     if (!BattleTesterService.isPlayerTurn(battleHistory.battle)) {
       return battleHistory;
     }
@@ -85,18 +83,11 @@ export default class BattleHistoryService {
       battleHistory = BattleHistoryService.run(battleHistory);
     }
 
-    if (!BattleTesterService.cardWillSucceed(battleHistory.battle, card)) {
+    if (!BattleTesterService.cardWillSucceed(battleHistory.battle, cardId)) {
       return battleHistory;
     }
 
-    let battle: IBattle;
-    if (card.cardType === CardType.UN_TARGETED) {
-      battle = BattleService.playUnTargetedCard(battleHistory.battle, card);
-    } else {
-      const target = battleHistory.battle.characterMap[targetId];
-      battle = BattleService.playTargetedCard(battleHistory.battle, card, target);
-    }
-
+    const battle = BattleService.playCard(battleHistory.battle, cardId, targetId);
     battleHistory = {
       battle,
       history: HistoryService.push(battleHistory.history, battle, true),

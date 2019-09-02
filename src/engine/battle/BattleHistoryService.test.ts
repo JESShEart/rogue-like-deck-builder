@@ -130,13 +130,12 @@ test('run active effect with queued effect', () => {
 test('play card', () => {
   const testBattle: IBattleHistory = {
     ...baseBattleHistory,
-    battle: {
-      ...baseBattleHistory.battle,
-      hand: [fiveDamageCard],
-      phase: Phase.PLAYER_ACTION,
-    },
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      .putCardInHand(fiveDamageCard)
+      .withPhase(Phase.PLAYER_ACTION)
+      .build(),
   };
-  const result = BattleHistoryService.playCard(testBattle, fiveDamageCard, testBattle.battle.hero);
+  const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result.battle.activeEffect).toBeTruthy();
   expect(result.battle.hand.length).toBe(0);
   expect(result.battle.discardPile.length).toBe(1);
@@ -144,16 +143,16 @@ test('play card', () => {
 });
 
 test('playing card ends time traveling', () => {
+  const battle: IBattle = BattleBuilder.from(baseBattleHistory.battle)
+    .putCardInHand(fiveDamageCard)
+    .withPhase(Phase.PLAYER_ACTION)
+    .build();
   let testBattle: IBattleHistory = {
-    ...baseBattleHistory,
-    battle: {
-      ...baseBattleHistory.battle,
-      hand: [fiveDamageCard],
-      phase: Phase.PLAYER_ACTION,
-    },
+    battle,
+    history: HistoryService.push(baseBattleHistory.history, battle),
   };
   testBattle = BattleHistoryService.timeTravel(testBattle);
-  const result = BattleHistoryService.playCard(testBattle, fiveDamageCard, testBattle.battle.hero);
+  const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result.battle.activeEffect).toBeTruthy();
   expect(result.battle.hand.length).toBe(0);
   expect(result.battle.discardPile.length).toBe(1);
@@ -164,39 +163,37 @@ test('playing card ends time traveling', () => {
 test('playing card fast forwards effect queue', () => {
   const testBattle: IBattleHistory = {
     ...baseBattleHistory,
-    battle: {
-      ...baseBattleHistory.battle,
-      effectQueue: [fiveDamageToHero, fiveDamageToHero],
-      hand: [fiveDamageCard],
-      phase: Phase.PLAYER_ACTION,
-    },
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      .withEffectInQueue(fiveDamageToHero)
+      .withEffectInQueue(fiveDamageToHero)
+      .putCardInHand(fiveDamageCard)
+      .withPhase(Phase.PLAYER_ACTION)
+      .build(),
   };
-  const result = BattleHistoryService.playCard(testBattle, fiveDamageCard, testBattle.battle.hero);
+  const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result.battle.characterMap[result.battle.hero].health).toBe(85);
 });
 
 test('play card fails when not player turn', () => {
   const testBattle: IBattleHistory = {
     ...baseBattleHistory,
-    battle: {
-      ...baseBattleHistory.battle,
-      hand: [fiveDamageCard],
-      phase: Phase.ENEMY_ACTION,
-    },
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      .putCardInHand(fiveDamageCard)
+      .withPhase(Phase.ENEMY_ACTION).build(),
   };
-  const result = BattleHistoryService.playCard(testBattle, fiveDamageCard, testBattle.battle.hero);
+
+  const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result).toStrictEqual(testBattle);
 });
 
 test('play card fails when not enough mana', () => {
   const testBattle: IBattleHistory = {
     ...baseBattleHistory,
-    battle: {
-      ...baseBattleHistory.battle,
-      hand: [fiveDamageCard],
-      mana: 0,
-    },
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      .putCardInHand(fiveDamageCard)
+      .withMana(0, 5)
+      .build(),
   };
-  const result = BattleHistoryService.playCard(testBattle, fiveDamageCard, testBattle.battle.hero);
+  const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result).toStrictEqual(testBattle);
 });

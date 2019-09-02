@@ -1,11 +1,11 @@
 import React from 'react';
-import {ICard} from '../engine/battle/ICard';
+import {IdentifiedCard} from '../engine/battle/ICard';
 import CardComponent from './card.component';
 import './hand.component.css';
 
 interface IProps {
-  hand: ICard[];
-  playCard: (card: ICard, targetId: number) => void;
+  hand: IdentifiedCard[];
+  playCard: (cardId: number, targetId: number) => void;
 }
 
 export default class HandComponent extends React.Component<IProps> {
@@ -22,7 +22,7 @@ export default class HandComponent extends React.Component<IProps> {
     );
   }
 
-  private renderCard(card: ICard, key: number) {
+  private renderCard(card: IdentifiedCard, key: number) {
     return (
       <span
         key={key}
@@ -36,7 +36,7 @@ export default class HandComponent extends React.Component<IProps> {
     );
   }
 
-  private playCard(card: ICard, targetId: number) {
-    this.props.playCard(card, targetId);
+  private playCard(cardId: number, targetId: number) {
+    this.props.playCard(cardId, targetId);
   }
 }

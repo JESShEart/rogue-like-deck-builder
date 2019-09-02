@@ -1,4 +1,5 @@
 import {IEffect, IUnTargetedEffect} from './IEffect';
+import IIdentified from './IIdentified';
 
 export enum CardType {
   TARGETED,
@@ -20,3 +21,12 @@ export interface IUnTargetedCard {
 }
 
 export type ICard = ITargetedCard | IUnTargetedCard;
+
+export type IdentifiedTargetedCard = IIdentified & ITargetedCard;
+export type IdentifiedUnTargetedCard = IIdentified & IUnTargetedCard;
+
+export type IdentifiedCard = IdentifiedTargetedCard | IdentifiedUnTargetedCard;
+
+export interface IIdentifiedCardMap {
+  [id: number]: IdentifiedCard;
+}

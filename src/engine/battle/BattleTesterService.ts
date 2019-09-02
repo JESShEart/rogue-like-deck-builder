@@ -1,5 +1,4 @@
 import IBattle, {Phase} from './IBattle';
-import {ICard} from './ICard';
 
 export default class BattleTesterService {
   public static shouldActivateNextEffect(battle: IBattle): boolean {
@@ -18,8 +17,8 @@ export default class BattleTesterService {
     return !battle.effectQueue.length;
   }
 
-  public static cardWillSucceed(battle: IBattle, card: ICard): boolean {
-    return battle.mana >= card.cost;
+  public static cardWillSucceed(battle: IBattle, cardId: number): boolean {
+    return battle.mana >= battle.cardMap[cardId].cost;
   }
 
   public static waitingForPlayerChoice(battle: IBattle): boolean {

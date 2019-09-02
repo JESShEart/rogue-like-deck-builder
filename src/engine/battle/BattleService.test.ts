@@ -15,10 +15,10 @@ const ENEMY = baseBattle.enemyList[0];
 
 test('draw 1 card', () => {
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
-  const battle: IBattle = {
-    ...baseBattle,
-    deck: [card],
-  };
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInDeck(card)
+    .build();
   const result = BattleService.draw(battle);
   expect(result.hand.length).toBe(1);
   expect(result.deck.length).toBe(0);
@@ -26,11 +26,11 @@ test('draw 1 card', () => {
 
 test('play 1 un-targeted card', () => {
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
-  const battle: IBattle = {
-    ...baseBattle,
-    hand: [card],
-  };
-  const {hand, discardPile, mana} = BattleService.playUnTargetedCard(battle, battle.hand[0] as IUnTargetedCard);
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInHand(card)
+    .build();
+  const {hand, discardPile, mana} = BattleService.playCard(battle, battle.hand[0]);
   expect(mana).toBe(4);
   expect(hand.length).toBe(0);
   expect(discardPile.length).toBe(1);
@@ -38,12 +38,12 @@ test('play 1 un-targeted card', () => {
 
 test('play 1 targeted card', () => {
   const card: ITargetedCard = {cardType: CardType.TARGETED, name: 'card', cost: 1, effectList: [{effectType: EffectType.TARGETED}]};
-  const battle: IBattle = {
-    ...baseBattle,
-    hand: [card],
-  };
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInHand(card)
+    .build();
   const {hand, discardPile, mana, effectQueue} =
-    BattleService.playTargetedCard(battle, battle.hand[0] as ITargetedCard, baseBattle.characterMap[ENEMY]);
+    BattleService.playCard(battle, battle.hand[0], ENEMY);
   expect(mana).toBe(4);
   expect(hand.length).toBe(0);
   expect(discardPile.length).toBe(1);
@@ -54,12 +54,11 @@ test('play 1 targeted card', () => {
 
 test('cannot play card when not enough mana', () => {
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 2, effectList: []};
-  const battle: IBattle = {
-    ...baseBattle,
-    hand: [card],
-    mana: 1,
-  };
-  const {hand, discardPile, mana} = BattleService.playUnTargetedCard(battle, battle.hand[0] as IUnTargetedCard);
+  const battle: IBattle = BattleBuilder.from(baseBattle)
+    .putCardInHand(card)
+    .withMana(1, 5)
+    .build();
+  const {hand, discardPile, mana} = BattleService.playCard(battle, battle.hand[0]);
   expect(mana).toBe(1);
   expect(hand.length).toBe(1);
   expect(discardPile.length).toBe(0);
@@ -99,9 +98,11 @@ test('activate damage effect', () => {
 
 test('activate drawing effect', () => {
   const effect: IUnTargetedEffect = {effectType: EffectType.DRAW_EFFECT};
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
   let battle: IBattle = {
-    ...baseBattle,
-    deck: [{cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []}],
+    ...BattleBuilder.from(baseBattle)
+      .putCardInHand(card)
+      .build(),
     effectQueue: [effect],
   };
   battle = BattleService.activateNextEffect(battle);

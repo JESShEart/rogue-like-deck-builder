@@ -1,3 +1,5 @@
+import IIdentified from './IIdentified';
+
 export enum CharacterType {
   HERO,
   ENEMY,
@@ -18,10 +20,6 @@ export interface IEnemyCharacter {
 }
 
 export type ICharacter = IHeroCharacter | IEnemyCharacter;
-
-export interface IIdentified {
-  readonly id: number;
-}
 
 export type IdentifiedEnemy = IIdentified & IEnemyCharacter;
 export type IdentifiedHero = IIdentified & IHeroCharacter;

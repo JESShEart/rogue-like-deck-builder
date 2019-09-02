@@ -1,7 +1,6 @@
 import React from 'react';
 import BattleHistoryService from '../engine/battle/BattleHistoryService';
 import IBattleHistory from '../engine/battle/IBattleHistory';
-import {ICard} from '../engine/battle/ICard';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
 import TimeTravelComponent from './time-travel.component';
@@ -41,7 +40,7 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
           effect={this.state.battle.activeEffect}
         />
         <HandComponent
-          hand={this.state.battle.hand}
+          hand={this.state.battle.hand.map((id) => this.state.battle.cardMap[id])}
           playCard={this.playCard}
         />
         <p>
@@ -69,8 +68,8 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
     this.updateBattle(BattleHistoryService.resume(this.state));
   }
 
-  private playCard(card: ICard, targetId: number) {
-    this.updateBattle(BattleHistoryService.playCard(this.state, card, targetId));
+  private playCard(cardId: number, targetId: number) {
+    this.updateBattle(BattleHistoryService.playCard(this.state, cardId, targetId));
   }
 
   private updateBattle(battleHistory: IBattleHistory) {

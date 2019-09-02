@@ -1,5 +1,6 @@
 import BattleBuilder from './BattleBuilder';
 import {Phase} from './IBattle';
+import {CardType, ICard} from './ICard';
 import {CharacterType, IEnemyCharacter, IHeroCharacter} from './ICharacter';
 
 const hero: IHeroCharacter = {characterType: CharacterType.HERO, name: 'hero', health: 100, maxHealth: 100};
@@ -79,4 +80,28 @@ test('build initial without phase', () => {
     .build();
   const {phase} = battle;
   expect(phase).toBe(Phase.UPKEEP);
+});
+
+test('put card in deck', () => {
+  const card: ICard = {cardType: CardType.UN_TARGETED, effectList: [], cost: 0, name: ''};
+  const battle = BattleBuilder.initial()
+    .withHero(hero)
+    .putCardInDeck(card)
+    .build();
+  const {cardMap, deck} = battle;
+  const id = 2;
+  expect(deck).toStrictEqual([id]);
+  expect(cardMap[id]).toStrictEqual({id, ...card});
+});
+
+test('put card in hand', () => {
+  const card: ICard = {cardType: CardType.UN_TARGETED, effectList: [], cost: 0, name: ''};
+  const battle = BattleBuilder.initial()
+    .withHero(hero)
+    .putCardInHand(card)
+    .build();
+  const {cardMap, hand} = battle;
+  const id = 2;
+  expect(hand).toStrictEqual([id]);
+  expect(cardMap[id]).toStrictEqual({id, ...card});
 });

@@ -1,7 +1,6 @@
 import EffectService from './EffectService';
 import IBattle from './IBattle';
-import {ICard, ITargetedCard, IUnTargetedCard} from './ICard';
-import {IdentifiedCharacter} from './ICharacter';
+import {CardType, ICard} from './ICard';
 import {IEffect} from './IEffect';
 
 export class BattleService {
@@ -27,14 +26,24 @@ export class BattleService {
     };
   }
 
-  public static playUnTargetedCard(battle: IBattle, card: IUnTargetedCard): IBattle {
-    return this.playCardCommonBehavior(battle, card, card.effectList);
-  }
-
-  public static playTargetedCard(battle: IBattle, card: ITargetedCard, target: IdentifiedCharacter): IBattle {
-    const targetId = target.id;
-    const effectToQueueList = card.effectList.map((effect) => ({...effect, targetId}));
-    return this.playCardCommonBehavior(battle, card, effectToQueueList);
+  public static playCard(battle: IBattle, cardId: number, targetId?: number): IBattle {
+    const card = battle.cardMap[cardId];
+    if (battle.mana < card.cost) {
+      // TODO fire an event to show a 'not enough mana' message
+      return battle;
+    }
+    const effectToQueueList = BattleService.prepCardEffects(card, targetId);
+    const effectQueue = [...battle.effectQueue, ...effectToQueueList];
+    const hand = battle.hand.filter((id) => id !== cardId);
+    const discardPile = [...battle.discardPile, cardId];
+    const mana = battle.mana - card.cost;
+    return {
+      ...battle,
+      discardPile,
+      effectQueue,
+      hand,
+      mana,
+    };
   }
 
   public static activateNextEffect(battle: IBattle): IBattle {
@@ -59,22 +68,11 @@ export class BattleService {
     };
   }
 
-  private static playCardCommonBehavior(battle: IBattle, card: ICard, effectToQueueList: IEffect[]) {
-    if (battle.mana < card.cost) {
-      // TODO fire an event to show a 'not enough mana' message
-      return battle;
+  private static prepCardEffects(card: ICard, targetId?: number): IEffect[] {
+    if (card.cardType === CardType.TARGETED) {
+      return card.effectList.map((effect) => ({...effect, targetId}));
+    } else {
+      return card.effectList;
     }
-
-    const effectQueue = [...battle.effectQueue, ...effectToQueueList];
-    const hand = battle.hand.filter((c: ICard) => c !== card);
-    const discardPile = [...battle.discardPile, card];
-    const mana = battle.mana - card.cost;
-    return {
-      ...battle,
-      discardPile,
-      effectQueue,
-      hand,
-      mana,
-    };
   }
 }

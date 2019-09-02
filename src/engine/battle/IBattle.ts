@@ -1,4 +1,4 @@
-import {ICard} from './ICard';
+import {IIdentifiedCardMap} from './ICard';
 import {IIdentifiedCharacterMap} from './ICharacter';
 import {IEffect} from './IEffect';
 
@@ -20,9 +20,10 @@ export default interface IBattle {
   readonly enemyList: number[];
   readonly characterMap: IIdentifiedCharacterMap;
 
-  readonly deck: ICard[];
-  readonly hand: ICard[];
-  readonly discardPile: ICard[];
+  readonly deck: number[];
+  readonly hand: number[];
+  readonly discardPile: number[];
+  readonly cardMap: IIdentifiedCardMap;
 
   readonly activeEffect?: IEffect;
   readonly effectQueue: IEffect[];
