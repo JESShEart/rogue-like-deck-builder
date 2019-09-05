@@ -20,6 +20,7 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
 
     this.updateBattle = this.updateBattle.bind(this);
     this.playCard = this.playCard.bind(this);
+    this.timeTravel = this.timeTravel.bind(this);
     this.goBack = this.goBack.bind(this);
     this.goForward = this.goForward.bind(this);
     this.resume = this.resume.bind(this);
@@ -51,7 +52,8 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
           Mana {this.state.battle.mana} / {this.state.battle.maxMana}
         </p>
         <TimeTravelComponent
-          timeTraveling={this.state.history.timeTraveling}
+          history={this.state.history}
+          timeTravel={this.timeTravel}
           goBack={this.goBack}
           goForward={this.goForward}
           resume={this.resume}
@@ -64,6 +66,10 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
         </button>
       </div>
     );
+  }
+
+  private timeTravel() {
+    this.setState(BattleHistoryService.timeTravel(this.state));
   }
 
   private goBack() {
