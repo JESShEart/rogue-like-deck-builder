@@ -12,6 +12,7 @@ export enum Phase {
 
 export default interface IBattle {
   readonly phase: Phase;
+  readonly turn: number;
 
   readonly mana: number;
   readonly maxMana: number;

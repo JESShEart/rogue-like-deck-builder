@@ -243,8 +243,11 @@ test('Enemy Action advances to Upkeep', () => {
     .putCardInDeck(card)
     .putCardInDeck(card)
     .putCardInDeck(card)
+    .withMana(0, 10)
     .build();
-  const result = BattleService.advanceNonPlayerPhase(battle);
-  expect(result.phase).toBe(Phase.UPKEEP);
-  expect(result.deck.length).toBe(5);
+  const {phase, deck, turn, mana} = BattleService.advanceNonPlayerPhase(battle);
+  expect(phase).toBe(Phase.UPKEEP);
+  expect(deck.length).toBe(5);
+  expect(turn).toBe(2);
+  expect(mana).toBe(10);
 });

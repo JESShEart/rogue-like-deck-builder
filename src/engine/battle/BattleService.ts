@@ -103,10 +103,12 @@ export class BattleService {
     const phase = Phase.UPKEEP;
     // TODO stuff like, tick buffs and expire any that have timed out
     const mana = battle.maxMana; // TODO possibly factor in any buffs/de-buffs for this
+    const turn = battle.turn + 1;
     battle = {
       ...battle,
       mana,
       phase,
+      turn,
     };
     return this.shuffle(battle);
   }

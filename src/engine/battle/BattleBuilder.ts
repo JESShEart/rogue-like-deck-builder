@@ -27,6 +27,7 @@ export default class BattleBuilder {
     maxMana: 0,
     nextId: 1,
     phase: Phase.UPKEEP,
+    turn: 1,
   };
 
   private readonly battle;
