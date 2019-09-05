@@ -92,11 +92,19 @@ export default class BattleBuilder {
     });
   }
 
+  public putCardInDiscardPile(card: ICard): BattleBuilder {
+    const {cardMap, id, nextId} = this.identifyCard(card);
+    const discardPile = [...this.battle.discardPile, id];
+    return new BattleBuilder({
+      ...this.battle,
+      cardMap,
+      discardPile,
+      nextId,
+    });
+  }
+
   public putCardInDeck(card: ICard): BattleBuilder {
-    const id = this.battle.nextId;
-    const nextId = id + 1;
-    const identifiedCard = {id, ...card};
-    const cardMap = {...this.battle.cardMap, [id]: identifiedCard};
+    const {cardMap, id, nextId} = this.identifyCard(card);
     const deck = [...this.battle.deck, id];
     return new BattleBuilder({
       ...this.battle,
@@ -107,10 +115,7 @@ export default class BattleBuilder {
   }
 
   public putCardInHand(card: ICard): BattleBuilder {
-    const id = this.battle.nextId;
-    const nextId = id + 1;
-    const identifiedCard = {id, ...card};
-    const cardMap = {...this.battle.cardMap, [id]: identifiedCard};
+    const {cardMap, id, nextId} = this.identifyCard(card);
     const hand = [...this.battle.hand, id];
     return new BattleBuilder({
       ...this.battle,
@@ -118,5 +123,17 @@ export default class BattleBuilder {
       hand,
       nextId,
     });
+  }
+
+  private identifyCard(card: ICard) {
+    const id = this.battle.nextId;
+    const nextId = id + 1;
+    const identifiedCard = {id, ...card};
+    const cardMap = {...this.battle.cardMap, [id]: identifiedCard};
+    return {
+      cardMap,
+      id,
+      nextId,
+    };
   }
 }

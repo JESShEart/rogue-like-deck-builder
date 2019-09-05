@@ -1,6 +1,6 @@
 import BattleBuilder from './BattleBuilder';
 import {BattleService} from './BattleService';
-import IBattle from './IBattle';
+import IBattle, {Phase} from './IBattle';
 import {CardType, ITargetedCard, IUnTargetedCard} from './ICard';
 import {CharacterType} from './ICharacter';
 import {EffectType, ITargetedAmountEffect, ITargetedEffect, IUnTargetedEffect} from './IEffect';
@@ -22,6 +22,53 @@ test('draw 1 card', () => {
   const result = BattleService.draw(battle);
   expect(result.hand.length).toBe(1);
   expect(result.deck.length).toBe(0);
+});
+
+test('shuffle puts discard pile into deck', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .putCardInDiscardPile(card)
+    .putCardInDiscardPile(card)
+    .build();
+  const {discardPile, deck} = BattleService.shuffle(battle);
+  expect(discardPile.length).toBe(0);
+  expect(deck.length).toBe(4);
+});
+
+test('shuffle no cards', () => {
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .build();
+  const {discardPile, deck} = BattleService.shuffle(battle);
+  expect(discardPile.length).toBe(0);
+  expect(deck.length).toBe(0);
+});
+
+test('shuffle discard pile with empty deck', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInDiscardPile(card)
+    .putCardInDiscardPile(card)
+    .build();
+  const {discardPile, deck} = BattleService.shuffle(battle);
+  expect(discardPile.length).toBe(0);
+  expect(deck.length).toBe(2);
+});
+
+test('shuffle empty discard pile with deck', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle = BattleBuilder
+    .from(baseBattle)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .build();
+  const {discardPile, deck} = BattleService.shuffle(battle);
+  expect(discardPile.length).toBe(0);
+  expect(deck.length).toBe(2);
 });
 
 test('play 1 un-targeted card', () => {
@@ -99,12 +146,10 @@ test('activate damage effect', () => {
 test('activate drawing effect', () => {
   const effect: IUnTargetedEffect = {effectType: EffectType.DRAW_EFFECT};
   const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
-  let battle: IBattle = {
-    ...BattleBuilder.from(baseBattle)
-      .putCardInHand(card)
-      .build(),
-    effectQueue: [effect],
-  };
+  let battle: IBattle = BattleBuilder.from(baseBattle)
+      .putCardInDeck(card)
+      .withEffectInQueue(effect)
+      .build();
   battle = BattleService.activateNextEffect(battle);
   battle = BattleService.completeActiveEffect(battle);
   expect(battle.deck.length).toBe(0);
@@ -113,10 +158,11 @@ test('activate drawing effect', () => {
 
 test('has 3 effects to resolve', () => {
   const effect: IUnTargetedEffect = {effectType: EffectType.UN_TARGETED};
-  let battle: IBattle = {
-    ...baseBattle,
-    effectQueue: [effect, effect, effect],
-  };
+  let battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withEffectInQueue(effect)
+    .withEffectInQueue(effect)
+    .withEffectInQueue(effect)
+    .build();
 
   battle = BattleService.activateNextEffect(battle);
   battle = BattleService.completeActiveEffect(battle);
@@ -129,4 +175,76 @@ test('has 3 effects to resolve', () => {
   battle = BattleService.activateNextEffect(battle);
   battle = BattleService.completeActiveEffect(battle);
   expect(battle.effectQueue.length).toBe(0);
+});
+
+test('End turn', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.PLAYER_ACTION)
+    .putCardInHand(card)
+    .putCardInHand(card)
+    .build();
+  const result = BattleService.endTurn(battle);
+  expect(result.phase).toBe(Phase.ENEMY_ACTION);
+  expect(result.discardPile.length).toBe(2);
+});
+
+test('Enemy Action advances to Upkeep', () => {
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.ENEMY_ACTION)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.UPKEEP);
+});
+
+test('Upkeep advances to Enemy Choose Action', () => {
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.UPKEEP)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.ENEMY_CHOOSE_ACTION);
+});
+
+test('Enemy Choose Action advances to Draw', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.ENEMY_CHOOSE_ACTION)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.DRAW);
+  expect(result.effectQueue.length).toBe(3);
+});
+
+test('Draw advances to Player Action', () => {
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.DRAW)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.PLAYER_ACTION);
+});
+
+test('Player Action advances to Enemy Action', () => {
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.PLAYER_ACTION)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.ENEMY_ACTION);
+});
+
+test('Enemy Action advances to Upkeep', () => {
+  const card: IUnTargetedCard = {cardType: CardType.UN_TARGETED, name: 'card', cost: 1, effectList: []};
+  const battle: IBattle =  BattleBuilder.from(baseBattle)
+    .withPhase(Phase.ENEMY_ACTION)
+    .putCardInDiscardPile(card)
+    .putCardInDiscardPile(card)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .putCardInDeck(card)
+    .build();
+  const result = BattleService.advanceNonPlayerPhase(battle);
+  expect(result.phase).toBe(Phase.UPKEEP);
+  expect(result.deck.length).toBe(5);
 });

@@ -1,7 +1,7 @@
 import EffectService from './EffectService';
-import IBattle from './IBattle';
+import IBattle, {Phase} from './IBattle';
 import {CardType, ICard} from './ICard';
-import {IEffect} from './IEffect';
+import {EffectType, IEffect, IUnTargetedEffect} from './IEffect';
 
 export class BattleService {
 
@@ -18,11 +18,13 @@ export class BattleService {
   }
 
   public static shuffle(battle: IBattle): IBattle {
+    // TODO actually shuffle the deck here
     const deck = [...battle.deck, ...battle.discardPile];
-    // TODO shuffle the deck here
+    const discardPile = [];
     return {
       ...battle,
       deck,
+      discardPile,
     };
   }
 
@@ -65,6 +67,85 @@ export class BattleService {
       ...battle,
       activeEffect,
       effectLog,
+    };
+  }
+
+  public static endTurn(battle: IBattle): IBattle {
+    if (battle.phase !== Phase.PLAYER_ACTION) { return battle; }
+    const discardPile = [...battle.discardPile, ...battle.hand];
+    const hand = [];
+    battle = {
+      ...battle,
+      discardPile,
+      hand,
+    };
+    return this.advanceNonPlayerPhase(battle);
+  }
+
+  public static advanceNonPlayerPhase(battle: IBattle): IBattle {
+    switch (battle.phase) {
+      case Phase.UPKEEP:
+        return this.selectEnemyAction(battle);
+      case Phase.ENEMY_CHOOSE_ACTION:
+        return this.doDrawStep(battle);
+      case Phase.DRAW:
+        return this.beginPlayerAction(battle);
+      case Phase.PLAYER_ACTION:
+        return this.queueEnemyActions(battle);
+      case Phase.ENEMY_ACTION:
+        return this.doUpkeep(battle);
+      default:
+        return battle;
+    }
+  }
+
+  private static doUpkeep(battle: IBattle): IBattle {
+    const phase = Phase.UPKEEP;
+    // TODO stuff like, tick buffs and expire any that have timed out
+    const mana = battle.maxMana; // TODO possibly factor in any buffs/de-buffs for this
+    battle = {
+      ...battle,
+      mana,
+      phase,
+    };
+    return this.shuffle(battle);
+  }
+
+  private static selectEnemyAction(battle: IBattle): IBattle {
+    const phase = Phase.ENEMY_CHOOSE_ACTION;
+    return {
+      ...battle,
+      phase,
+    };
+  }
+
+  private static doDrawStep(battle: IBattle): IBattle {
+    const phase = Phase.DRAW;
+    const drawCard: IUnTargetedEffect = {effectType: EffectType.DRAW_EFFECT};
+    const effectQueue = [drawCard, drawCard, drawCard, drawCard, drawCard].filter((e, i) => i < battle.deck.length);
+    return {
+      ...battle,
+      effectQueue,
+      phase,
+    };
+  }
+
+  private static queueEnemyActions(battle: IBattle): IBattle {
+    const phase = Phase.ENEMY_ACTION;
+    // TODO also place enemy actions onto the event queue now
+    const effectQueue = [...battle.effectQueue];
+    return {
+      ...battle,
+      effectQueue,
+      phase,
+    };
+  }
+
+  private static beginPlayerAction(battle: IBattle): IBattle {
+    const phase = Phase.PLAYER_ACTION;
+    return {
+      ...battle,
+      phase,
     };
   }
 

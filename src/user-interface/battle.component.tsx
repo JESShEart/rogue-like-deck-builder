@@ -1,6 +1,9 @@
 import React from 'react';
 import BattleHistoryService from '../engine/battle/BattleHistoryService';
+import BattleTesterService from '../engine/battle/BattleTesterService';
+import {Phase} from '../engine/battle/IBattle';
 import IBattleHistory from '../engine/battle/IBattleHistory';
+import {EffectType} from '../engine/battle/IEffect';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
 import TimeTravelComponent from './time-travel.component';
@@ -20,6 +23,7 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
     this.goBack = this.goBack.bind(this);
     this.goForward = this.goForward.bind(this);
     this.resume = this.resume.bind(this);
+    this.endTurn = this.endTurn.bind(this);
 
     this.state = this.props.initialState;
   }
@@ -52,6 +56,12 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
           goForward={this.goForward}
           resume={this.resume}
         />
+        <button
+          onClick={this.endTurn}
+          disabled={this.state.battle.phase !== Phase.PLAYER_ACTION}
+        >
+          End Turn
+        </button>
       </div>
     );
   }
@@ -72,6 +82,10 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
     this.updateBattle(BattleHistoryService.playCard(this.state, cardId, targetId));
   }
 
+  private endTurn() {
+    this.updateBattle(BattleHistoryService.endTurn(this.state));
+  }
+
   private updateBattle(battleHistory: IBattleHistory) {
     this.setState(battleHistory);
     if (battleHistory.battle.activeEffect) {
@@ -81,7 +95,16 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
       this.animationDelay = setTimeout(() => {
         this.animationDelay = undefined;
         this.updateBattle(BattleHistoryService.run(battleHistory));
-      }, 750);
+      }, battleHistory.battle.activeEffect.effectType === EffectType.DRAW_EFFECT ? 200 : 750);
+    } else if (!BattleTesterService.isPlayerTurn(battleHistory.battle)) {
+      if (this.animationDelay) {
+        clearTimeout(this.animationDelay);
+      }
+      this.animationDelay = setTimeout(() => {
+        this.animationDelay = undefined;
+        battleHistory = BattleHistoryService.advancePhase(battleHistory);
+        this.updateBattle(battleHistory);
+      }, 350);
     }
   }
 

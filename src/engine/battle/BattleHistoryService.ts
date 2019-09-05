@@ -95,4 +95,23 @@ export default class BattleHistoryService {
 
     return BattleHistoryService.run(battleHistory);
   }
+
+  public static advancePhase(battleHistory: IBattleHistory): IBattleHistory {
+    const battle = BattleService.advanceNonPlayerPhase(battleHistory.battle);
+    const history = HistoryService.push(battleHistory.history, battle);
+    battleHistory = {
+      battle,
+      history,
+    };
+    return BattleHistoryService.run(battleHistory);
+  }
+
+  public static endTurn(battleHistory: IBattleHistory): IBattleHistory {
+    const battle = BattleService.endTurn(battleHistory.battle);
+    const history = HistoryService.push(battleHistory.history, battle, true);
+    return {
+      battle,
+      history,
+    };
+  }
 }

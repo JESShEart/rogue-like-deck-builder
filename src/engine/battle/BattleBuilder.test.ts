@@ -105,3 +105,15 @@ test('put card in hand', () => {
   expect(hand).toStrictEqual([id]);
   expect(cardMap[id]).toStrictEqual({id, ...card});
 });
+
+test('put card in discard pile', () => {
+  const card: ICard = {cardType: CardType.UN_TARGETED, effectList: [], cost: 0, name: ''};
+  const battle = BattleBuilder.initial()
+    .withHero(hero)
+    .putCardInDiscardPile(card)
+    .build();
+  const {cardMap, discardPile} = battle;
+  const id = 2;
+  expect(discardPile).toStrictEqual([id]);
+  expect(cardMap[id]).toStrictEqual({id, ...card});
+});

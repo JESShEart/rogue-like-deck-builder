@@ -197,3 +197,30 @@ test('play card fails when not enough mana', () => {
   const result = BattleHistoryService.playCard(testBattle, testBattle.battle.hand[0], testBattle.battle.hero);
   expect(result).toStrictEqual(testBattle);
 });
+
+test('advancePhase calls run', () => {
+  const testBattle: IBattleHistory = {
+    ...baseBattleHistory,
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      // Choose Action advances to Draw phase
+      .withPhase(Phase.ENEMY_CHOOSE_ACTION)
+      // having a card in deck should spawn a new draw event upon starting the Draw phase
+      .putCardInDeck({cardType: CardType.UN_TARGETED, cost: 0, effectList: [], name: 'test'})
+      .build(),
+  };
+  const result = BattleHistoryService.advancePhase(testBattle);
+  expect(result.battle.phase).toBe(Phase.DRAW);
+  expect(result.battle.activeEffect).toBeTruthy();
+});
+
+test('end turn captures history', () => {
+  const testBattle: IBattleHistory = {
+    ...baseBattleHistory,
+    battle: BattleBuilder.from(baseBattleHistory.battle)
+      .withPhase(Phase.PLAYER_ACTION)
+      .build(),
+  };
+  const {battle, history} = BattleHistoryService.endTurn(testBattle);
+  expect(battle.phase).toBe(Phase.ENEMY_ACTION);
+  expect(history.timeline.length).toBe(3);
+});
