@@ -6,6 +6,7 @@ import IBattleHistory from '../engine/battle/IBattleHistory';
 import {EffectType} from '../engine/battle/IEffect';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
+import ManaBarComponent from './mana-bar.component';
 import TimeTravelComponent from './time-travel.component';
 
 interface IProps {
@@ -48,9 +49,10 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
           hand={this.state.battle.hand.map((id) => this.state.battle.cardMap[id])}
           playCard={this.playCard}
         />
-        <p>
-          Mana {this.state.battle.mana} / {this.state.battle.maxMana}
-        </p>
+        <ManaBarComponent
+          mana={this.state.battle.mana}
+          maxMana={this.state.battle.maxMana}
+        />
         <TimeTravelComponent
           history={this.state.history}
           timeTravel={this.timeTravel}

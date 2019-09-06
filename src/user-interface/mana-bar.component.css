@@ -1,0 +1,59 @@
+.mana-bar {
+  display: inline-block;
+  border: 1px solid #777777;
+  border-radius: 4px;
+  padding: 2px;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+
+  background-image: -webkit-repeating-linear-gradient(left, hsla(0,0%,100%,0) 0%, hsla(0,0%,100%,0)   6%, hsla(0,0%,100%, .1) 7.5%),
+  -webkit-repeating-linear-gradient(left, hsla(0,0%,  0%,0) 0%, hsla(0,0%,  0%,0)   4%, hsla(0,0%,  0%,.03) 4.5%),
+  -webkit-repeating-linear-gradient(left, hsla(0,0%,100%,0) 0%, hsla(0,0%,100%,0) 1.2%, hsla(0,0%,100%,.15) 2.2%),
+
+  linear-gradient(180deg, hsl(0,0%,78%)  0%,
+      hsl(0,0%,90%) 47%,
+      hsl(0,0%,78%) 53%,
+      hsl(0,0%,70%)100%);
+}
+
+.mana-bar .mana-container {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  border: 1px solid #777777;
+  background-color: #888888;
+  border-radius: 50%;
+  margin: 2px;
+}
+
+.mana-bar:hover .mana-container.full {
+  animation: pulsing 1s infinite;
+  -webkit-animation: pulsing 1s infinite;
+}
+
+@keyframes pulsing
+{
+  0%   {background-color: #888888;}
+  50%  {background-color: yellow;}
+  100% {background-color: #888888;}
+}
+
+@-webkit-keyframes pulsing /* Safari and Chrome - necessary duplicate */
+{
+  0%   {background-color: #888888;}
+  50%  {background-color: yellow;}
+  100% {background-color: #888888;}
+}
+
+.mana-bar .mana-container .mana {
+  margin: 2px;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  transition: background-color 700ms linear;
+}
+
+.mana-bar .mana-container .mana.full {
+  background-color: yellow;
+}
