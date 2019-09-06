@@ -7,8 +7,9 @@ interface IProps {
 }
 
 const renderMana = (available: boolean) => {
-  const manaContainerClass = ['mana-container', available ? 'full' : 'empty'].join(' ');
-  const manaClass = ['mana', available ? 'full' : 'empty'].join(' ');
+  const availableClass = available ? 'full' : 'empty';
+  const manaContainerClass = ['mana-container', availableClass].join(' ');
+  const manaClass = ['mana', availableClass].join(' ');
   return (
     <div
       className={manaContainerClass}
