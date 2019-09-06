@@ -66,6 +66,7 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
         >
           End Turn
         </button>
+        Turn {this.state.battle.turn}
       </div>
     );
   }
