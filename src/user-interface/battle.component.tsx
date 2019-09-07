@@ -4,9 +4,11 @@ import BattleTesterService from '../engine/battle/BattleTesterService';
 import {Phase} from '../engine/battle/IBattle';
 import IBattleHistory from '../engine/battle/IBattleHistory';
 import {EffectType} from '../engine/battle/IEffect';
+import './battle.component.css';
 import CharacterComponent from './character.component';
 import HandComponent from './hand.component';
 import ManaBarComponent from './mana-bar.component';
+import PhaseComponent from './phase.component';
 import TimeTravelComponent from './time-travel.component';
 
 interface IProps {
@@ -32,7 +34,9 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
 
   public render() {
     return (
-      <div>
+      <div
+        className='battlefield'
+      >
         <CharacterComponent
           character={this.state.battle.characterMap[this.state.battle.hero]}
           effect={this.state.battle.activeEffect}
@@ -67,6 +71,9 @@ export default class BattleComponent extends React.Component<IProps, IBattleHist
           End Turn
         </button>
         Turn {this.state.battle.turn}
+        <div>
+          <PhaseComponent phase={this.state.battle.phase}/>
+        </div>
       </div>
     );
   }

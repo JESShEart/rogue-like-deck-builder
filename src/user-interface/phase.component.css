@@ -1,0 +1,11 @@
+.phase-container {
+  display: inline-block;
+}
+
+.phase.passed {
+  background-color: #aaaaaa;
+}
+
+.phase.current {
+  background-color: #cccccc;
+}

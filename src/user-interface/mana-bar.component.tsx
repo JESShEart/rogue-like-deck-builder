@@ -6,12 +6,13 @@ interface IProps {
   maxMana: number;
 }
 
-const renderMana = (available: boolean) => {
+const renderMana = (key: number, available: boolean) => {
   const availableClass = available ? 'full' : 'empty';
   const manaContainerClass = ['mana-container', availableClass].join(' ');
   const manaClass = ['mana', availableClass].join(' ');
   return (
     <div
+      key={key}
       className={manaContainerClass}
     >
       <div
@@ -22,7 +23,7 @@ const renderMana = (available: boolean) => {
 };
 
 const renderManas = ({mana, maxMana}: IProps) =>
-  Array.from(Array(maxMana)).map((n, i) => renderMana(i < mana));
+  Array.from(Array(maxMana)).map((n, i) => renderMana(i, i < mana));
 
 export default class ManaBarComponent extends React.Component<IProps> {
   public render() {

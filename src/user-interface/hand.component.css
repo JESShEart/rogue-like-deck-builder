@@ -1,6 +1,30 @@
+.hand-container{
+  position: relative;
+}
+
 .hand {
   text-align: center;
+  position: absolute;
+  right: 100px;
+  white-space: nowrap;
 }
+
 .card-container {
-  margin: .25vmax;
+  position: relative;
+  overflow: hidden;
+  margin: 2px;
+  -webkit-animation: slideright 100ms forwards;
+  -webkit-animation-delay: 0ms;
+  animation: slideright 1000ms forwards;
+  animation-delay: 0ms;
+}
+
+@-webkit-keyframes slideright {
+  /*0% { height: 0px; }*/
+  /*100% { height: 2000px; }*/
+}
+
+@keyframes slideright {
+  0% { margin-right: 2000px; }
+  100% { margin-right: 2px; }
 }

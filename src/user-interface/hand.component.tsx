@@ -16,8 +16,10 @@ export default class HandComponent extends React.Component<IProps> {
 
   public render() {
     return (
-      <div className='hand'>
-        {this.props.hand.map((card, key) => this.renderCard(card, key))}
+      <div className='hand-container'>
+        <div className='hand'>
+          {this.props.hand.map((card, key) => this.renderCard(card, key))}
+        </div>
       </div>
     );
   }
