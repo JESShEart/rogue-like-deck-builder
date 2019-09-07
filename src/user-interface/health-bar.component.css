@@ -1,11 +1,12 @@
 div.health-text {
-  font-size: 1.5vmin;
+  font-size: 12px;
+  color: white;
 }
 
 progress.health-bar {
-  height: 1vh;
-  width: 10vw;
-  border: 0px none;
+  height: 10px;
+  width: 125px;
+  border: 0 none;
   background-color: #cccccc;
   color: red;
   transition: all 0.5s ease-out;
